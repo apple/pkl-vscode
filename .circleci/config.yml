@@ -1,0 +1,118 @@
+# Generated from CircleCI.pkl. DO NOT EDIT.
+version: '2.1'
+orbs:
+  pr-approval: apple/pr-approval@0.1.0
+jobs:
+  build:
+    steps:
+    - checkout
+    - run:
+        command: |-
+          git clone https://github.com/emscripten-core/emsdk
+          cd emsdk
+          ./emsdk install 2.0.24
+          ./emsdk activate 2.0.24
+          echo 'export PATH=${PWD}/emsdk:${PWD}/emsdk/upstream/emscripten:${PATH}' >> $BASH_ENV
+        name: Install emsdk
+    - run:
+        command: |-
+          mkdir /tmp/pkl
+          curl -L "https://repo1.maven.org/maven2/org/pkl-lang/pkl-cli-linux-amd64/0.25.1/pkl-cli-linux-amd64-0.25.1.bin" > /tmp/pkl/pkl
+          chmod +x /tmp/pkl/pkl
+          echo 'export PATH=/tmp/pkl:${PATH}' >> $BASH_ENV
+        name: Download Pkl
+    - run:
+        command: npm ci
+    - run:
+        command: npm run build
+    - run:
+        command: npm test
+    - run:
+        command: npm run lint
+    - run:
+        command: npm run package-only
+    - persist_to_workspace:
+        root: '.'
+        paths:
+        - .dist/vscode/*.*
+    docker:
+    - image: cimg/node:18.19.0
+  do-release:
+    steps:
+    - attach_workspace:
+        at: '.'
+    - run:
+        command: |-
+          echo "Creating release"
+          gh release create ${CIRCLE_TAG} \
+            --title "${CIRCLE_TAG}" \
+            --target "${CIRCLE_SHA1}" \
+            --verify-tag \
+            --notes "Release notes: https://pkl-lang.org/vscode/current/changelog.html" \
+            --repo "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" \
+            .dist/vscode/*.vsix
+        name: gh release
+    docker:
+    - image: maniator/gh:v2.40.1
+  trigger-docsite-build:
+    steps:
+    - run:
+        command: |-
+          curl --location \
+            --request POST \
+            --header "Content-Type: application/json" \
+            -u "${CIRCLE_TOKEN}:" \
+            --data '{ "branch": "main" }' \
+            "https://circleci.com/api/v2/project/github/apple/pkl-lang.org/pipeline"
+        name: Triggering docsite build
+    docker:
+    - image: cimg/base:current
+workflows:
+  prb:
+    jobs:
+    - hold:
+        type: approval
+    - pr-approval/authenticate:
+        context: pkl-pr-approval
+    - build:
+        requires:
+        - hold
+        - pr-approval/authenticate
+    when:
+      matches:
+        value: << pipeline.git.branch >>
+        pattern: ^pull/\d+(/head)?$
+  main:
+    jobs:
+    - build
+    when:
+      equal:
+      - main
+      - << pipeline.git.branch >>
+  release:
+    jobs:
+    - build:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v?\d+\.\d+\.\d+$/
+    - do-release:
+        requires:
+        - build
+        context: pkl-github-release
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v?\d+\.\d+\.\d+$/
+    - trigger-docsite-build:
+        requires:
+        - do-release
+        context:
+        - pkl-pr-approval
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v?\d+\.\d+\.\d+$/

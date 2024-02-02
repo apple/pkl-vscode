@@ -1,0 +1,145 @@
+{
+  "name": "pkl-vscode",
+  "displayName": "Pkl",
+  "description": "Syntax highlighting, bracket matching, and code folding for Pkl files.",
+  "icon": "img/icon.png",
+  "version": "0.15.0",
+  "publisher": "Pkl",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apple/pkl-vscode"
+  },
+  "homepage": "https://github.com/apple/pkl-vscode",
+  "bugs": {
+    "url": "https://github.com/apple/pkl-vscode/issues"
+  },
+  "//": "don't publish to npm",
+  "private": true,
+  "engines": {
+    "vscode": "^1.59.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "main": "./out/main.js",
+  "activationEvents": [
+    "onLanguage:pkl"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "pkl",
+        "extensions": [
+          ".pkl",
+          ".pcf"
+        ],
+        "filenames": [
+          "PklProject"
+        ],
+        "aliases": [
+          "Pkl"
+        ],
+        "firstLine": "^#!/.*\\bpkl\\b",
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./img/icon.svg",
+          "dark": "./img/icon.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "pkl",
+        "scopeName": "source.pkl",
+        "path": "out/pkl.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "pkl",
+        "path": "out/pkl.snippets.json"
+      }
+    ],
+    "semanticTokenTypes": [
+      {
+        "id": "punctuation",
+        "description": "Punctuation symbols"
+      },
+      {
+        "id": "string-escape",
+        "description": "String escape characters"
+      },
+      {
+        "id": "constant",
+        "description": "Constants built into the language, such as booleans or nulls"
+      },
+      {
+        "id": "error",
+        "description": "Invalid parsing sequences"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "scopes": {
+          "keyword": [
+            "keyword.pkl"
+          ],
+          "punctuation": [
+            "punctuation.pkl"
+          ],
+          "punctuationBracket": [
+            "punctuation.bracket.pkl"
+          ],
+          "control": [
+            "keyword.control.pkl"
+          ],
+          "error": [
+            "invalid.illegal.pkl"
+          ],
+          "stringEscape": [
+            "constant.character.escape.pkl"
+          ],
+          "constant": [
+            "constant.character.language.pkl"
+          ]
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "clean": "rm -rf out/",
+    "build": "npm run clean && npm run build:pkl && npm run build:code && npm run build:tree-sitter",
+    "build:local": "npm run clean && npm run build:pkl && npm run build:code && npm run build:tree-sitter:local",
+    "build:pkl": "pkl eval -m . src/pkl/index.pkl",
+    "build:tree-sitter": "mkdir -p out/grammar/ && cd node_modules/@apple/tree-sitter-pkl && tree-sitter build-wasm && cd - && mv node_modules/@apple/tree-sitter-pkl/tree-sitter-pkl.wasm out/pkl.wasm",
+    "build:tree-sitter:local": "mkdir -p out/grammar/ && cd node_modules/@apple/tree-sitter-pkl && tree-sitter build-wasm --docker && cd - && mv node_modules/@apple/tree-sitter-pkl/tree-sitter-pkl.wasm out/pkl.wasm",
+    "esbuild-base": "mkdir -p out/ && cp node_modules/web-tree-sitter/tree-sitter.wasm out/ && esbuild ./src/ts/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "build:code": "npm run esbuild-base -- --sourcemap",
+    "lint:fix": "prettier -w src/",
+    "lint": "prettier -c src/",
+    "watch": "npm run esbuild-base -- --sourcemap --watch",
+    "test": "node scripts/license-header.js test",
+    "prepackage": "npm run build",
+    "package": "mkdir -p .dist/vscode && vsce package --out .dist/vscode/pkl-vscode-$npm_package_version.vsix",
+    "package-only": "mkdir -p .dist/vscode && vsce package --out .dist/vscode/pkl-vscode-$npm_package_version.vsix",
+    "preinstallextension": "npm run package",
+    "installextension": "code --install-extension .dist/vscode/pkl-vscode-$npm_package_version.vsix",
+    "add-license-headers": "node scripts/license-header.js"
+  },
+  "devDependencies": {
+    "@apple/tree-sitter-pkl": "^0.16.0",
+    "@types/node": "^16.11.38",
+    "@types/vscode": "^1.59.0",
+    "esbuild": "^0.14.54",
+    "prettier": "^2.6.2",
+    "tree-sitter": "^0.20.0",
+    "tree-sitter-cli": "^0.20.8",
+    "tslint": "^5.8.0",
+    "typescript": "^4.7.3",
+    "vsce": "2.9",
+    "vscode-test": "^1.6.1",
+    "web-tree-sitter": "^0.20.5"
+  }
+}

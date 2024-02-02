@@ -1,0 +1,9 @@
+= Installation
+
+The extension is distributed as a Visual Studio Extension (_.vsix_) file.
+To install the extension,
+
+1. download the latest version of the _.vsix_ file from https://github.com/apple/pkl-vscode/releases/latest/
+2. follow https://code.visualstudio.com/docs/editor/extension-gallery#_install-from-a-vsix[Install from a VSIX] in the VS Code docs.
+
+To confirm that the installation succeeded, open a _.pkl_ file and verify that xref:features/syntax-highlighting.adoc[Syntax Highlighting] works.

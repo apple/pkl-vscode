@@ -1,0 +1,7 @@
+= VS Code Extension
+
+The VS Code extension provides Pkl language support for https://code.visualstudio.com[Visual Studio Code].
+
+Follow xref:installation.adoc[installation instructions] and check out the xref:features/index.adoc[feature overview].
+
+Review the xref:changelog.adoc[changelog] for the latest changes.

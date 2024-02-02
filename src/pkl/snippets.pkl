@@ -1,0 +1,114 @@
+//===----------------------------------------------------------------------===//
+// Copyright © 2024 Apple Inc. and the Pkl project authors. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//===----------------------------------------------------------------------===//
+
+class Snippet {
+  scope: String?
+
+  /// Defines one or more trigger words that display the snippet in IntelliSense.
+  ///
+  /// Substring matching is performed on prefixes.
+  prefix: String
+
+  /// One or more lines of content, which will be joined as multiple lines upon insertion.
+  ///
+  /// Newlines and embedded tabs will be formatted according to the context in which the snippet
+  /// is inserted
+  body: String
+
+  /// An optional description of the snippet displayed by IntelliSense
+  description: String?
+}
+
+snippets: Mapping<String, Snippet> = new {
+  ["Amends"] {
+    prefix = "amends"
+    body = """
+      amends "${1:moduleUri}"
+      """
+  }
+  ["Class"] {
+    prefix = "class"
+    body = """
+      class ${1:className} {
+      }
+      """
+  }
+  ["Extends"] {
+    prefix = "extends"
+    body = """
+      extends "${1:moduleUri}"
+      """
+  }
+  ["Function"] {
+    prefix = "function"
+    body = """
+      function ${1:functionName}(${2:parameterName}: ${3:parameterType}): ${4:returnType} = $0
+      """
+  }
+  ["If-Else"] {
+    prefix = "if-else"
+    body = """
+      if (${1:condition}) $2 else $0
+      """
+  }
+  ["Import"] {
+    prefix = "import"
+    body = """
+      import "${1:moduleUri}"
+      """
+  }
+  ["Glob import"] {
+    prefix = "import*"
+    body = """
+      import* "${1:globPattern}"
+      """
+  }
+  ["Read"] {
+    prefix = "read"
+    body = """
+      read("${1:resourceUri}")
+      """
+  }
+  ["Nullable read"] {
+    prefix = "read?"
+    body = """
+      read?("${1:resourceUri}")
+      """
+  }
+  ["Glob read"] {
+    prefix = "read*"
+    body = """
+      read*("${1:globPattern}")
+      """
+  }
+  ["Lambda"] {
+    prefix = "->"
+    body = """
+      (${1:parameters}) -> $0
+      """
+  }
+  ["Throw"] {
+    prefix = "throw"
+    body = """
+      throw("${1:message}")
+      """
+  }
+}
+
+output {
+  value = snippets
+  renderer = new JsonRenderer {}
+}

@@ -1,0 +1,5 @@
+name: vscode
+title: VS Code Extension
+version: 0.11.0
+nav:
+- nav.adoc

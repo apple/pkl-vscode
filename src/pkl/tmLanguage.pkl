@@ -1,0 +1,190 @@
+//===----------------------------------------------------------------------===//
+// Copyright © 2024 Apple Inc. and the Pkl project authors. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//===----------------------------------------------------------------------===//
+
+/// Template for generating TextMate grammar (.tmLanguage) files.
+///
+/// TextMate grammar files typically ship as part of a TextMate bundle.
+/// They are a de-facto standard for defining the syntax of programming and markup languages
+/// for the purpose of syntax highlighting and other editor features.
+/// They are supported by many editors, including but not limited to:
+///
+/// * [TextMate](https://macromates.com)
+/// * [Visual Studio Code](https://code.visualstudio.com)
+/// * [Atom](https://atom.io)
+/// * [Sublime Text](https://www.sublimetext.com)
+/// * [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+/// * Eclipse (via [tm4e](https://github.com/eclipse/tm4e))
+/// * [GitHub](https://github.com)
+/// * [Ace](https://ace.c9.io)
+///
+/// To learn more about TextMate syntax definitions, visit the following resources:
+///
+/// * <https://manual.macromates.com/en/language_grammars>
+/// * <http://docs.sublimetext.info/en/latest/extensibility/syntaxdefs.html>
+/// * <https://github.com/Binocular222/Sublime-Text-3-Full-Documentation/blob/master/tmLanguage.txt>
+open module com.apple.tmLanguage
+
+`$schema`: String?
+
+name: String?
+
+/// A unique name for the grammar, following the convention of being a
+/// dot-separated name where each new (left-most) part specializes the name.
+///
+/// Normally, it would be a two-part name where the first is either text or source and the
+/// second is the name of the language or document type. But if you are specializing
+/// an existing type, you probably want to derive the name from the type you are specializing.
+/// For example Markdown is `text.html.markdown` and Ruby on Rails (rhtml files) is
+/// `text.html.rails`. The advantage of deriving it from (in this case) `text.html` is that
+/// everything which works in the text.html scope will also work in the `text.html`.«something»
+/// scope (but with a lower precedence than something specifically targeting `text.html`.«something»).
+scopeName: String
+
+/// An array of file type extensions that the grammar should (by default)
+/// be used with.
+///
+/// This is referenced when TextMate does not know what grammar to use for a file
+/// the user opens. If however the user selects a grammar from the language pop-up
+/// in the status bar, TextMate will remember that choice.
+fileTypes: Listing<String>?
+
+/// Regular expressions that lines (in the document) are matched against.
+///
+/// If a line matches one of the patterns (but not both), it becomes a
+/// folding marker (see the foldings section for more info).
+@SourceCode { language = "RegExp" }
+foldingStartMarker: String(isRegex)?
+
+/// regular expressions that lines (in the document) are matched against.
+///
+/// If a line matches one of the patterns (but not both), it becomes a
+/// folding marker (see the foldings section for more info).
+@SourceCode { language = "RegExp" }
+foldingStopMarker: String(isRegex)?
+
+firstLineMatch: String = ""
+
+/// A scope selector that specifies which scopes the injected grammar should be
+/// applied in.
+injectionSelector: String = ""
+
+uuid: String
+
+/// The rules used to parse the document.
+patterns: Listing<Pattern>?
+
+/// A set of rules that can be included from other places in the grammar.
+///
+/// The key of is the name of the rule, and the value is the actual rule.
+repository: Mapping<String, Pattern>?
+
+abstract class Pattern
+
+abstract class NamedPattern extends Pattern {
+  /// The name which gets assigned to the portion matched.
+  ///
+  /// This is used for styling and scope-specific settings and actions, which means
+  /// it should generally be derived from one of the standard names.
+  name: String = ""
+}
+
+class MatchPattern extends NamedPattern {
+  /// A regular expression which is used to identify the portion of text to which the name
+  /// should be assigned.
+  ///
+  /// Example: `#"\b(true|false)\b"#`.
+  @SourceCode { language = "RegExp" }
+  match: String(isRegex) = ""
+
+  /// Assigns attributes to the captures of the match pattern.
+  captures: Mapping<String, Capture>?
+}
+
+/// Allow matches which span several lines and must both be mutually exclusive with
+/// the match key.
+///
+/// Each is a regular expression pattern.
+/// [begin] is the pattern that starts the block and [end] is the pattern which ends the block.
+/// Captures from the begin pattern can be referenced in the end pattern by using normal regular
+/// expression back-references.
+class BeginEndPattern extends NamedPattern {
+  /// The pattern that starts the block.
+  @SourceCode { language = "RegExp" }
+  begin: String
+
+  /// Assign attributes to the captures of the [begin] pattern.
+  beginCaptures: Mapping<String, Capture>?
+
+  /// The pattern that ends the block.
+  @SourceCode { language = "RegExp" }
+  end: String
+
+  /// Assign attributes to the captures of the [end] pattern.
+  endCaptures: Mapping<String, Capture>?
+
+  /// Short-hand for giving both [beginCaptures] and [endCaptures] with same values.
+  captures: Mapping<String, Capture>?
+
+  /// Similar to the [name] key but only assigns the name to the text *between* what
+  /// is matched by the [begin]/[end] patterns.
+  contentName: String = ""
+
+  /// Applies to the region between the begin and end matches
+  patterns: Listing<Pattern>?
+}
+
+class IncludePattern extends Pattern {
+  /// The pattern or grammar to include. The following kinds of includes are supported:
+  ///
+  /// 1.  `"#foo"` includes pattern `repository["foo"]`.
+  ///     Constraint `isValidReference` validates that a rule with this name exists.
+  ///
+  /// 2.  `"!foo"` includes the external grammar named `foo`.
+  ///     The exclamation mark is specific to this template and removed before rendering.
+  ///
+  /// 3.  `"\$self"` includes the grammar itself.
+  include: String
+}
+
+class Capture {
+  name: String
+}
+
+hidden convertIncludePattern = (p) -> (p.toDynamic()) {
+  include = if (p.include.startsWith("!")) p.include.drop(1) else p.include
+}
+
+function includePattern(pattern: String): IncludePattern = new { include = pattern }
+
+hidden skipIfEmpty = (v: Dynamic|Typed|String) ->
+  let (isEmpty = if (v is String)
+      v.isEmpty
+    else
+      v.toMap().isEmpty
+  )
+    if (isEmpty) null else v
+
+output {
+  renderer = new JsonRenderer {
+    converters {
+      [String] = skipIfEmpty
+      [Map] = skipIfEmpty
+      [MatchPattern] = skipIfEmpty
+      [BeginEndPattern] = skipIfEmpty
+      [IncludePattern] = skipIfEmpty
+    }
+  }
+}

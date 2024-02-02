@@ -1,0 +1,17 @@
+= Code Snippets
+
+Insert a code snippet by typing its shortcut and pressing kbd:[Tab].
+
+image::code-snippets.gif[Code snippets demo]
+
+== Supported Snippets
+
+cla:: Class
+fun:: Function
+fn::  Function (short)
+->::  Lambda
+ame:: amends
+ext:: extends
+imp:: import
+if::  if-else
+thr:: throw

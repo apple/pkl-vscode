@@ -1,0 +1,16 @@
+.DS_Store
+
+/node_modules
+/.vscode-test
+
+/out
+/.out
+/.dist
+/.gradle
+
+/.idea
+/*.iml
+/*.ipr
+/*.iws
+
+emsdk-*

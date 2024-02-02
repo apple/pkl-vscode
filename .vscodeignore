@@ -1,0 +1,10 @@
+**/*
+
+!CHANGELOG.md
+!README.md
+!language-configuration.json
+!package.json
+!out/**
+!queries/*
+!img/*
+!LICENSE

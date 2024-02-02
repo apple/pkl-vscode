@@ -1,0 +1,15 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+	"files.exclude": {
+		"bin": true
+	},
+	"search.exclude": {
+		"out": true,
+		"bin": true
+	},
+	"files.trimTrailingWhitespace": true,
+	"editor.insertSpaces": true,
+	"editor.tabSize": 2,
+	"typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+	"editor.formatOnSave": false
+}
