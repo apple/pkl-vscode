@@ -17,7 +17,7 @@ jobs:
     - run:
         command: |-
           mkdir /tmp/pkl
-          curl -L "https://repo1.maven.org/maven2/org/pkl-lang/pkl-cli-linux-amd64/0.25.1/pkl-cli-linux-amd64-0.25.1.bin" > /tmp/pkl/pkl
+          curl -L "https://github.com/apple/pkl/releases/download/0.25.1/pkl-linux-amd64" > /tmp/pkl/pkl
           chmod +x /tmp/pkl/pkl
           echo 'export PATH=/tmp/pkl:${PATH}' >> $BASH_ENV
         name: Download Pkl
