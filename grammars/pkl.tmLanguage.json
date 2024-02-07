@@ -1,0 +1,420 @@
+{
+  "name": "Pkl",
+  "scopeName": "source.pkl",
+  "fileTypes": [
+    "pkl",
+    "pcf"
+  ],
+  "foldingStartMarker": "\\{",
+  "foldingStopMarker": "}",
+  "uuid": "0598575b-33f4-42c1-b797-5b93a6cfc03a",
+  "patterns": [
+    {
+      "name": "constant.character.language.pkl",
+      "match": "\\b(true|false|null)\\b"
+    },
+    {
+      "name": "comment.line.pkl",
+      "match": "//.*"
+    },
+    {
+      "name": "comment.block.pkl",
+      "begin": "/\\*",
+      "end": "\\*/"
+    },
+    {
+      "name": "storage.modifier.pkl",
+      "match": "\\b(hidden|local|abstract|external|open|in|out|amends|extends|fixed|const)\\b"
+    },
+    {
+      "name": "keyword.pkl",
+      "match": "\\b(amends|as|extends|function|is|let|read|read\\?|import|throw|trace)\\b"
+    },
+    {
+      "name": "keyword.control.pkl",
+      "match": "\\b(if|else|when|for|import|new)\\b"
+    },
+    {
+      "name": "constant.numeric.pkl",
+      "match": "(?x:               # extended mode\n  \\b\n  (?:\n    0x[\\da-fA-F]+  # 1 or more hex literal\n    |\n    0b[0-1]+       # 1 or more binary literal\n    |\n    \\d+            # 1 or more decimal literal\n  )\n  \\b\n)"
+    },
+    {
+      "name": "constant.numeric.pkl",
+      "match": "(?x:\n  \\b\n  (?:\n    \\d*                 # 0 or more digits\n    \\.                  # dot literal\n    \\d+                 # 1 or mor digits\n    (?:[eE][+-]?\\d+)?   # optional exponent\n    |                   # OR\n    \\d+                 # 1 or more digits\n    [eE][+-]?\\d+        # exponent\n  )\n  \\b\n)"
+    },
+    {
+      "name": "keyword.operator.pkl",
+      "match": "(?x:\n  # MATH\n  \\+    # add\n  |\n  -     # minus\n  |\n  \\*    # multiply\n  |\n  /     # divide\n  |\n  ~/    # integer divide\n  |\n  %     # modulo\n  |\n  \\*\\*  # power\n  |\n  >     # greater than\n  |\n  >=    # greater than or equals\n  |\n  <     # less than\n  |\n  <=    # less than or equals\n  |\n  ==    # equals\n  |\n  !=    # not equals\n\n  # LOGICAL\n  |\n  !     # unary not\n  |\n  &&    # and\n  |\n  \\|\\|  # or\n  |\n\n  # MISCELLANEOUS\n  \\|>   # function pipe\n  |\n  \\?\\?  # nullish coalesce\n  |\n  !!    # non-null assertion\n  |\n  =     # assignment\n  |\n  ->    # lambda arrow\n  |\n  \\|    # type union\n)"
+    },
+    {
+      "name": "variable.language.pkl",
+      "match": "\\b(this|module|outer|super)\\b"
+    },
+    {
+      "name": "support.type.pkl",
+      "match": "\\b(unknown|never)\\b"
+    },
+    {
+      "name": "meta.brace.pkl",
+      "match": "\\b[(){}\\[\\]]\\b"
+    },
+    {
+      "name": "keyword.class.pkl",
+      "match": "\\b(class|typealias)\\b"
+    },
+    {
+      "name": "punctuation.pkl",
+      "match": "(?x:\n  \\.\\?  # optional chain\n  |\n  \\.    # member access\n  |\n  ;     # semicolon\n  |\n  :     # colon\n)"
+    },
+    {
+      "name": "string.quoted.triple.0.pkl",
+      "begin": "(\"\"\")",
+      "end": "(\"\"\")",
+      "captures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.0.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.double.0.pkl",
+      "begin": "(\")",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "end": "(?x:\n  (\")         # string end\n  |                     # OR\n  (.?$)                 # error; unterminated string (flag last character as an error)\n)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.delimimter.pkl"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.0.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.triple.1.pkl",
+      "begin": "(#\"\"\")",
+      "end": "(\"\"\"#)",
+      "captures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.1.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.double.1.pkl",
+      "begin": "(#\")",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "end": "(?x:\n  (\"\\#)         # string end\n  |                     # OR\n  (.?$)                 # error; unterminated string (flag last character as an error)\n)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.delimimter.pkl"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.1.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.triple.2.pkl",
+      "begin": "(##\"\"\")",
+      "end": "(\"\"\"##)",
+      "captures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.2.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.double.2.pkl",
+      "begin": "(##\")",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "end": "(?x:\n  (\"\\#\\#)         # string end\n  |                     # OR\n  (.?$)                 # error; unterminated string (flag last character as an error)\n)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.delimimter.pkl"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.2.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.triple.3.pkl",
+      "begin": "(###\"\"\")",
+      "end": "(\"\"\"###)",
+      "captures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.3.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.double.3.pkl",
+      "begin": "(###\")",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "end": "(?x:\n  (\"\\#\\#\\#)         # string end\n  |                     # OR\n  (.?$)                 # error; unterminated string (flag last character as an error)\n)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.delimimter.pkl"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.3.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.triple.4.pkl",
+      "begin": "(####\"\"\")",
+      "end": "(\"\"\"####)",
+      "captures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.4.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.double.4.pkl",
+      "begin": "(####\")",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "end": "(?x:\n  (\"\\#\\#\\#\\#)         # string end\n  |                     # OR\n  (.?$)                 # error; unterminated string (flag last character as an error)\n)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.delimimter.pkl"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.4.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.triple.5.pkl",
+      "begin": "(#####\"\"\")",
+      "end": "(\"\"\"#####)",
+      "captures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.5.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\\#\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#\\#\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.double.5.pkl",
+      "begin": "(#####\")",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "end": "(?x:\n  (\"\\#\\#\\#\\#\\#)         # string end\n  |                     # OR\n  (.?$)                 # error; unterminated string (flag last character as an error)\n)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.delimimter.pkl"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.5.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\\#\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#\\#\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.triple.6.pkl",
+      "begin": "(######\"\"\")",
+      "end": "(\"\"\"######)",
+      "captures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.6.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\\#\\#\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#\\#\\#\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.double.6.pkl",
+      "begin": "(######\")",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.delimiter.pkl"
+        }
+      },
+      "end": "(?x:\n  (\"\\#\\#\\#\\#\\#\\#)         # string end\n  |                     # OR\n  (.?$)                 # error; unterminated string (flag last character as an error)\n)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.delimimter.pkl"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.pkl"
+        }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.6.pkl",
+          "match": "(?x:                 # turn on extended mode\n  \\\\\\#\\#\\#\\#\\#\\#\n  (?:\n    [trn\"\\\\]         # tab, carriage return, newline, quote, backslash\n    |                # OR\n    u                # the letter u\n    \\{               # curly opening brace literal\n    [\\da-fA-F]+      # 1 or more hex number literal\n    }                # curly end literal\n    |                # OR\n    \\(               # interpolation start\n    .+?              # one or more characters lazily (correct syntax highlighting within here should be provided by semantic tokens)\n    \\)               # interpolation end\n  )\n  |                  # OR\n  (                  # capture group: invalid escape\n    \\\\\\#\\#\\#\\#\\#\\#   # the escape char\n    .                # any character\n  )\n)",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.unrecognized-string-escape.pkl"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -25,3 +25,10 @@ To develop locally, there is a "Launch Extension" task. In VSCode, navigate to t
 Prior to launching, ensure the project environment is set up by running `npm run build:local`.
 
 The local development environment requires that the [esbuild Problem Matchers](https://marketplace.visualstudio.com/items?itemName=connor4312.esbuild-problem-matchers) plugin is installed into VSCode.
+
+## Changing the grammar
+
+The Pkl grammar is generated from `src/pkl/pkl.tmLanguage.pkl` and stored in `grammars/pkl.tmLanguage.json`.
+To generate it run `npm run build` or `npm run build:local`.
+
+The generated grammar should be commited along with the Pkl source.
