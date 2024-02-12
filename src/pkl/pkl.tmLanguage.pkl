@@ -286,7 +286,7 @@ local builtInTypes: Pattern = new KeywordMatchPattern {
 
 local braces: MatchPattern = new {
   name = "meta.brace.pkl"
-  match = #"\b[(){}\[\]]\b"#
+  match = #"[(){}\[\]]"#
 }
 
 local intLiteral: MatchPattern = new {
