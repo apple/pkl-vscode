@@ -108,9 +108,9 @@ class PklLanguageSupport
     const tree = this.#parse(document);
     const captures = this.#foldsQuery.captures(tree.rootNode);
     return captures
-      .filter((it) => it.node.endPosition.column > it.node.startPosition.column)
+      .filter((it) => it.node.endPosition.row > it.node.startPosition.row)
       .map((it) => {
-        return new vscode.FoldingRange(it.node.startPosition.column, it.node.endPosition.column);
+        return new vscode.FoldingRange(it.node.startPosition.row, it.node.endPosition.row);
       });
   }
 }
