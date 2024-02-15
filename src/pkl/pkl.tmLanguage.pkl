@@ -107,6 +107,31 @@ local function multilineString(numPounds: Int): BeginEndPattern = new {
   }
 }
 
+@SourceCode { language = "RegExp" }
+local identRegex: String = #"[\p{L}_$][\p{L}0-9_$]*"#
+
+@SourceCode { language = "RegExp" }
+local baseTypeRegex: String = #"""
+  (?x:
+    \#(identRegex) # ident
+    \s*
+    (?:<[^>]*>)? # optional type parameters
+    \s*
+    (?:\([^)]*\))? # optional constraint (this is an approximation)
+    \s*
+    \?? # optional nulability indicator
+  )
+  """#
+
+@SourceCode { language = "RegExp" }
+local typeRegex: String = #"""
+  (?x:
+    \#(baseTypeRegex)
+    \s*
+    (\|\s*\#(baseTypeRegex))*
+  )
+  """#
+
 local languageConstant: Pattern = new KeywordMatchPattern {
   name = "constant.character.language.pkl"
   // language=regexp
@@ -289,18 +314,45 @@ local braces: MatchPattern = new {
   match = #"[(){}\[\]]"#
 }
 
-local intLiteral: MatchPattern = new {
-  name = "constant.numeric.pkl"
+local hexLiteral: MatchPattern = new {
+  name = "constant.numeric.hex.pkl"
   match = #"""
-    (?x:               # extended mode
+    (?x:
       \b
-      (?:
-        0x[\da-fA-F]+  # 1 or more hex literal
-        |
-        0b[0-1]+       # 1 or more binary literal
-        |
-        \d+            # 1 or more decimal literal
-      )
+      0x(?:[\da-fA-F][\da-fA-F_]*[\da-fA-F]|[\da-fA-F_])
+      \b
+    )
+    """#
+}
+
+local binaryLiteral: MatchPattern = new {
+  name = "constant.numeric.binary.pkl"
+  match = #"""
+    (?x:
+      \b
+      0b(?:[0-1][0-1_]*[0-1]|[0-1])
+      \b
+    )
+    """#
+}
+
+local octalLiteral: MatchPattern = new {
+  name = "constant.numeric.octal.pkl"
+  match = #"""
+    (?x:
+      \b
+      0o(?:[0-7][0-7_]*[0-7]|[0-7])
+      \b
+    )
+    """#
+}
+
+local decimalLiteral: MatchPattern = new {
+  name = "constant.numeric.decimal.pkl"
+  match = #"""
+    (?x:
+      \b
+      (?:\d[0-9_]*\d|\d)
       \b
     )
     """#
@@ -312,13 +364,13 @@ local floatLiteral: MatchPattern = new {
     (?x:
       \b
       (?:
-        \d*                 # 0 or more digits
-        \.                  # dot literal
-        \d+                 # 1 or mor digits
-        (?:[eE][+-]?\d+)?   # optional exponent
-        |                   # OR
-        \d+                 # 1 or more digits
-        [eE][+-]?\d+        # exponent
+        (?:\d[0-9_]*\d|\d)?              # 0 or more digits
+        \.                               # dot literal
+        (?:\d[0-9_]*\d|\d)               # 1 or more digits
+        (?:[eE][+-]?(?:\d[0-9_]*\d|\d))? # optional exponent
+        |                                # OR
+        (?:\d[0-9_]*\d|\d)               # 1 or more digits
+        [eE][+-]?(?:\d[0-9_]*\d|\d)      # exponent
       )
       \b
     )
@@ -333,14 +385,228 @@ local classKeyword: Pattern = new KeywordMatchPattern {
   }
 }.pattern
 
+local annotation: MatchPattern = new {
+  name = "entity.name.type.pkl"
+  match = #"@\#(identRegex)"#
+}
+
+local modulePattern: MatchPattern = new {
+  match = #"""
+    (?x:
+      \b
+      (module)
+      \s+
+      (
+        \#(identRegex)(?:\.\#(identRegex))*
+      )
+    )
+    """#
+  captures {
+    ["1"] {
+      name = "variable.language.pkl"
+    }
+    ["2"] {
+      name = "variable.other.module.pkl"
+    }
+  }
+}
+
+local typeAlias: MatchPattern = new {
+  name = ""
+  match = #"""
+    (?x:
+      (typealias)
+      \s+
+      (\#(identRegex))
+      \s*(=)\s*
+      (\#(typeRegex))
+    )
+    """#
+  captures {
+    ["1"] {
+      name = "keyword.class.pkl"
+    }
+    ["2"] {
+      name = "entity.name.type.pkl"
+    }
+    ["3"] {
+      name = "punctuation.pkl"
+    }
+    ["4"] {
+      name = "entity.name.type.pkl"
+    }
+  }
+}
+
+local variableDecl: MatchPattern = new {
+  match = #"""
+    (?x:
+      (
+        \b\#(identRegex) # variable name
+        |
+        `[^`]+` # quoted variable name
+      )
+      \s*
+      (=)(?!=)
+    )
+    """#
+  captures {
+    ["1"] {
+      name = "variable.other.property.pkl"
+    }
+    ["2"] {
+      name = "punctuation.pkl"
+    }
+  }
+}
+
+local variableDeclType: BeginEndPattern = new {
+  begin = #"""
+    (?x:
+      (
+        (?:\b|\s*)\#(identRegex) # variable name
+        |
+        `[^`]+` # quoted variable name
+      )
+      \s*
+      (:)
+      \s*
+      (\#(typeRegex)) # type
+    )
+    """#
+  end = #"\s*=|,|\)|^[ \t]*$"#
+  captures {
+    ["1"] {
+      name = "variable.other.property.pkl"
+    }
+    ["2"] {
+      name = "punctuation.pkl"
+    }
+    ["3"] {
+      name = "entity.name.type.pkl"
+    }
+  }
+}
+
+local genericType: MatchPattern = new {
+  match = #"(:)\s*(\#(typeRegex))"#
+  captures {
+    ["1"] {
+      name = "punctuation.pkl"
+    }
+    ["2"] {
+      name = "entity.name.type.pkl"
+    }
+  }
+}
+
+local forPattern: MatchPattern = new {
+  match = #"""
+    (?x:
+      \b(for)
+      \s*\(
+      (\#(identRegex))(?:\s*,\s*(\#(identRegex)))* # bindings
+      \s+
+      (in)
+    )
+    """#
+  captures {
+    ["1"] {
+      name = "keyword.control.pkl"
+    }
+    ["2"] {
+      name = "variable.other.property.pkl"
+    }
+    ["3"] {
+      name = "variable.other.property.pkl"
+    }
+    ["4"] {
+      name = "storage.modifier.pkl"
+    }
+  }
+}
+
+local clazz: MatchPattern = new {
+  name = "entity.name.type.pkl"
+  match = #"\b(class)\s+\#(identRegex)"#
+  captures {
+    ["1"] {
+      name = "keyword.class.pkl"
+    }
+  }
+}
+
+local newPattern: MatchPattern = new {
+  match = #"""
+    \b(new)\s+(\#(typeRegex))
+    """#
+  captures {
+    ["1"] {
+      name = "keyword.control.pkl"
+    }
+    ["2"] {
+      name = "entity.name.type.pkl"
+    }
+  }
+}
+
+local functionPattern: MatchPattern = new {
+  match = #"""
+    \b(function)\s+(\#(identRegex))
+    """#
+  captures {
+    ["1"] {
+      name = "keyword.pkl"
+    }
+    ["2"] {
+      name = "variable.other.property.pkl"
+    }
+  }
+}
+
+local asPattern: MatchPattern = new {
+  match = #"\b(as)\s+(\#(typeRegex))"#
+  captures {
+    ["1"] {
+      name = "keyword.pkl"
+    }
+    ["2"] {
+      name = "entity.name.type.pkl"
+    }
+  }
+}
+
+local amendedVar: MatchPattern = new {
+  match = #"^\s*(\#(identRegex))\s*\{"#
+  captures {
+    ["1"] {
+      name = "variable.other.property.pkl"
+    }
+  }
+}
+
 patterns {
+  modulePattern
+  typeAlias
+  clazz
+  forPattern
+  newPattern
+  functionPattern
+  asPattern
   languageConstant
   lineComment
   blockComment
+  variableDeclType
+  variableDecl
+  genericType
+  amendedVar
   modifier
   keywordOperator
   controlKeyword
-  intLiteral
+  hexLiteral
+  binaryLiteral
+  octalLiteral
+  decimalLiteral
   floatLiteral
   symbolOperator
   builtInVariable
@@ -348,6 +614,7 @@ patterns {
   braces
   classKeyword
   punctuation
+  annotation
   for (numPounds in IntSeq(0, 6)) {
     multilineString(numPounds)
     singlelineString(numPounds)
