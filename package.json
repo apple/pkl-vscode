@@ -3,7 +3,7 @@
   "displayName": "Pkl",
   "description": "Syntax highlighting, bracket matching, and code folding for Pkl files.",
   "icon": "img/icon.png",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "publisher": "Pkl",
   "license": "Apache-2.0",
   "repository": {
