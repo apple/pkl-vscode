@@ -1,5 +1,22 @@
 = Changelog
 
+== 0.16.0 (2024-02-28)
+
+=== Fixes
+
+* Fixes folding ranges (link:https://github.com/apple/pkl-vscode/pull/6[#6])
+* Fixes brace token matching (link:https://github.com/apple/pkl-vscode/pull/8[#8])
+
+=== Miscellaneous
+
+* Changes Pkl download link to GitHub (CI) (link:https://github.com/apple/pkl-vscode/pull/3[#3])
+
+=== Contributors ❤️
+
+Thank you to all the contributors for this release!
+
+* link:https://github.com/RedCMD[@RedCMD]
+
 == 0.15.0 (2024-02-02)
 
 Initial release
