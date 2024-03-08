@@ -16,6 +16,6 @@
 
 output {
   files {
-    ["out/pkl.snippets.json"] = import("snippets.pkl").output
+    ["out/pkl.snippets.json"] = import("../../textmate-bundle/pkl/snippets.pkl").output
   }
 }
