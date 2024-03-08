@@ -22,8 +22,6 @@ jobs:
           echo 'export PATH=/tmp/pkl:${PATH}' >> $BASH_ENV
         name: Download Pkl
     - run:
-        command: npm run clone-grammar
-    - run:
         command: npm ci
     - run:
         command: npm run build
