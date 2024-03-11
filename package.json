@@ -53,7 +53,7 @@
       {
         "language": "pkl",
         "scopeName": "source.pkl",
-        "path": "textmate-bundle/Syntaxes/pkl.tmLanguage"
+        "path": "out/pkl.tmLanguage.json"
       }
     ],
     "snippets": [

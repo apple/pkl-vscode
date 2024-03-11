@@ -1,0 +1,5 @@
+amends "../../textmate-bundle/pkl/pkl.tmLanguage.pkl"
+
+output {
+  renderer = new JsonRenderer {}
+}
