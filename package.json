@@ -120,13 +120,15 @@
     "lint:fix": "prettier -w src/",
     "lint": "prettier -c src/",
     "watch": "npm run esbuild-base -- --sourcemap --watch",
-    "test": "node scripts/license-header.js test",
+    "test": "node scripts/license-header.js test && npm run test:grammar",
+    "test:grammar": "sh scripts/check-grammar",
     "prepackage": "npm run build",
     "package": "mkdir -p .dist/vscode && vsce package --out .dist/vscode/pkl-vscode-$npm_package_version.vsix",
     "package-only": "mkdir -p .dist/vscode && vsce package --out .dist/vscode/pkl-vscode-$npm_package_version.vsix",
     "preinstallextension": "npm run package",
     "installextension": "code --install-extension .dist/vscode/pkl-vscode-$npm_package_version.vsix",
-    "add-license-headers": "node scripts/license-header.js"
+    "add-license-headers": "node scripts/license-header.js",
+    "clone-grammar": "git submodule update --init --recursive"
   },
   "devDependencies": {
     "@apple/tree-sitter-pkl": "^0.16.0",

@@ -47,6 +47,7 @@ jobs {
           echo 'export PATH=/tmp/pkl:${PATH}' >> $BASH_ENV
           """#
       }
+      new RunStep { command = "git submodule update --init --recursive" }
       new RunStep { command = "npm ci" }
       new RunStep { command = "npm run build" }
       new RunStep { command = "npm test" }
