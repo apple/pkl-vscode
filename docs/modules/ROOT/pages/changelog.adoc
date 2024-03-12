@@ -1,5 +1,11 @@
 = Changelog
 
+== 0.17.0 (2024-03-12)
+
+=== Miscellaneous
+
+* Changes Pkl TextMate grammar to link:https://github.com/apple/pkl.tmbundle[pkl.tmBundle]
+
 == 0.16.0 (2024-02-28)
 
 === Fixes
