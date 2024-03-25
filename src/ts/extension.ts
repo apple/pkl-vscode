@@ -18,6 +18,13 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { newPklLanguageSupport } from "./PklLanguageSupport";
+import {
+	LanguageClient,
+	LanguageClientOptions,
+	ServerOptions
+} from 'vscode-languageclient/node';
+
+let client: LanguageClient
 
 export async function activate(context: vscode.ExtensionContext) {
   const languageSupport = await newPklLanguageSupport();
@@ -31,7 +38,32 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.languages.registerFoldingRangeProvider({ language: "pkl" }, languageSupport)
   );
+
+  // lsp client
+  const pklPath: string = vscode.workspace.getConfiguration().get('pkl.path') || "";
+  let serverOptions: ServerOptions = {
+    run: {
+      command: pklPath,
+      args: ["lsp"],
+      options: {}
+    },
+    debug: {
+      command: pklPath,
+      args: ["lsp", "--verbose"],
+      options: {}
+    }
+  };
+
+  let clientOptions: LanguageClientOptions = {
+    documentSelector: [{scheme: "file", language: "pkl"}]
+  };
+
+  client = new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
+  client.start();
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate(): Thenable<void> | undefined {
+  if (!client) return undefined;
+  return client.stop();
+}

@@ -106,7 +106,17 @@
           ]
         }
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Pkl IDE",
+      "properties": {
+        "pkl.path": {
+          "type": "string",
+          "default": null,
+          "description": "Path to pkl/jpkl executable"
+        }
+      }
+    }
   },
   "scripts": {
     "clean": "rm -rf out/",
@@ -129,6 +139,9 @@
     "installextension": "code --install-extension .dist/vscode/pkl-vscode-$npm_package_version.vsix",
     "add-license-headers": "node scripts/license-header.js",
     "clone-grammar": "git submodule update --init --recursive"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^7.0.0"
   },
   "devDependencies": {
     "@apple/tree-sitter-pkl": "^0.16.0",
