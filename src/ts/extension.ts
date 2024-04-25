@@ -21,7 +21,7 @@ import { newPklLanguageSupport } from "./PklLanguageSupport";
 import {
 	LanguageClient,
 	LanguageClientOptions,
-	ServerOptions
+	ServerOptions,
 } from 'vscode-languageclient/node';
 
 let client: LanguageClient
@@ -40,7 +40,8 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   // lsp client
-  const pklPath: string = vscode.workspace.getConfiguration().get('pkl.path') || "";
+  const pklPath: string = vscode.workspace.getConfiguration().get('pkl.path') ?? "";
+  const pklDebugPort: number = vscode.workspace.getConfiguration().get('pkl.debug.port') ?? 5005;
   let serverOptions: ServerOptions = {
     run: {
       command: pklPath,
@@ -48,8 +49,13 @@ export async function activate(context: vscode.ExtensionContext) {
       options: {}
     },
     debug: {
-      command: pklPath,
-      args: ["lsp", "--verbose"],
+      command: 'java',
+      args: [
+        `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${pklDebugPort}`,
+        '-jar',
+        pklPath,
+        'lsp'
+      ],
       options: {}
     }
   };

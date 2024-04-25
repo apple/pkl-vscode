@@ -108,12 +108,17 @@
       }
     ],
     "configuration": {
-      "title": "Pkl IDE",
+      "title": "Pkl",
       "properties": {
         "pkl.path": {
           "type": "string",
           "default": null,
           "description": "Path to pkl/jpkl executable"
+        },
+        "pkl.debug.port": {
+          "type": "integer",
+          "default": 5005,
+          "description": "Debug port to launch jpkl. This is an internal developer option."
         }
       }
     }
