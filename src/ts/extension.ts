@@ -21,7 +21,9 @@ import { newPklLanguageSupport } from "./PklLanguageSupport";
 import {
 	LanguageClient,
 	LanguageClientOptions,
-	ServerOptions,
+  RequestType,
+  TextDocumentIdentifier,
+	ServerOptions
 } from 'vscode-languageclient/node';
 
 let client: LanguageClient
@@ -54,22 +56,58 @@ export async function activate(context: vscode.ExtensionContext) {
         `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${pklDebugPort}`,
         '-jar',
         pklPath,
-        'lsp'
+        'lsp',
+        '--verbose'
       ],
       options: {}
     }
   };
 
   let clientOptions: LanguageClientOptions = {
-    documentSelector: [{scheme: "file", language: "pkl"}]
+    documentSelector: [{scheme: "file", language: "pkl"}, {scheme: "pkl", language: "pkl"}],
+    markdown: {
+      isTrusted: true
+    }
   };
 
   client = new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
+
+  const pklProvider = createPklContentProvider(client);
+
+  context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("pkl", pklProvider));
+
   client.start();
+
+  context.subscriptions.push(vscode.commands.registerCommand("pkl.open.file", async (path: string, lineStr: string) => {
+    const parsedUri = vscode.Uri.parse(path);
+    const editor = await vscode.window.showTextDocument(parsedUri);
+
+    let line = lineStr ? parseInt(lineStr, 10) : 1;
+    if (Number.isNaN(line)) line = 1;
+
+    const range = editor.document.lineAt(line).range;
+    editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
+  }));
+
 }
 
 // this method is called when your extension is deactivated
 export function deactivate(): Thenable<void> | undefined {
   if (!client) return undefined;
   return client.stop();
+}
+
+const pklEventEmitter = new vscode.EventEmitter<vscode.Uri>();
+
+const pklFileContentRequest = new RequestType<TextDocumentIdentifier, string, void>("pkl/fileContents");
+
+function createPklContentProvider(client: LanguageClient): vscode.TextDocumentContentProvider {
+  return <vscode.TextDocumentContentProvider>{
+    onDidChange: pklEventEmitter.event,
+
+    provideTextDocumentContent: async (uri: vscode.Uri, token: vscode.CancellationToken): Promise<string> => {
+      return client.sendRequest(pklFileContentRequest, { uri: uri.toString() }, token)
+        .then((content: string): string => content || "");
+    }
+  };
 }
