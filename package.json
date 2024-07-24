@@ -108,17 +108,17 @@
       }
     ],
     "configuration": {
-      "title": "Pkl",
+      "title": "Pkl LSP",
       "properties": {
-        "pkl.path": {
+        "pklLSP.path": {
           "type": "string",
           "default": null,
-          "description": "Path to pkl/jpkl executable"
+          "description": "Path to pkl-lsp executable"
         },
-        "pkl.debug.port": {
+        "pklLSP.debug.port": {
           "type": "integer",
           "default": 5005,
-          "description": "Debug port to launch jpkl. This is an internal developer option."
+          "description": "Debug port to launch pkl-lsp. This is an internal developer option."
         }
       }
     }
