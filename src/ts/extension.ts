@@ -42,21 +42,20 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   // lsp client
-  const pklPath: string = vscode.workspace.getConfiguration().get('pkl.path') ?? "";
-  const pklDebugPort: number = vscode.workspace.getConfiguration().get('pkl.debug.port') ?? 5005;
+  const pklLspPath: string = vscode.workspace.getConfiguration().get('pklLSP.path') ?? "";
+  const pklLspDebugPort: number = vscode.workspace.getConfiguration().get('pklLSP.debug.port') ?? 5005;
   let serverOptions: ServerOptions = {
     run: {
-      command: pklPath,
-      args: ["lsp"],
+      command: pklLspPath,
+      args: [],
       options: {}
     },
     debug: {
       command: 'java',
       args: [
-        `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${pklDebugPort}`,
+        `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${pklLspDebugPort}`,
         '-jar',
-        pklPath,
-        'lsp',
+        pklLspPath,
         '--verbose'
       ],
       options: {}
