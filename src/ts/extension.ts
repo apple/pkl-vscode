@@ -77,12 +77,14 @@ export async function activate(context: vscode.ExtensionContext) {
 
   client.start();
 
-  context.subscriptions.push(vscode.commands.registerCommand("pkl.open.file", async (path: string, lineStr: string) => {
+  context.subscriptions.push(vscode.commands.registerCommand("pkl.open.file", async (path: string, maybeLine: number) => {
     const parsedUri = vscode.Uri.parse(path);
     const editor = await vscode.window.showTextDocument(parsedUri);
 
-    let line = lineStr ? parseInt(lineStr, 10) : 1;
-    if (Number.isNaN(line)) line = 1;
+    let line = maybeLine ?? 1;
+    if (Number.isNaN(line)) {
+      line = 1;
+    }
 
     const range = editor.document.lineAt(line).range;
     editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
