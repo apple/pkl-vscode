@@ -106,7 +106,22 @@
           ]
         }
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Pkl LSP",
+      "properties": {
+        "pklLSP.path": {
+          "type": "string",
+          "default": null,
+          "description": "Path to pkl-lsp executable"
+        },
+        "pklLSP.debug.port": {
+          "type": "integer",
+          "default": 5005,
+          "description": "Debug port to launch pkl-lsp. This is an internal developer option."
+        }
+      }
+    }
   },
   "scripts": {
     "clean": "rm -rf out/",
@@ -129,6 +144,9 @@
     "installextension": "code --install-extension .dist/vscode/pkl-vscode-$npm_package_version.vsix",
     "add-license-headers": "node scripts/license-header.js",
     "clone-grammar": "git submodule update --init --recursive"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^7.0.0"
   },
   "devDependencies": {
     "@apple/tree-sitter-pkl": "^0.16.0",
