@@ -3,6 +3,7 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "npm-watch",
             "type": "npm",
             "script": "watch",
             "problemMatcher": "$esbuild-watch",
@@ -14,6 +15,22 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build-lsp",
+            "type": "shell",
+            "options": {
+                "cwd": "../pkl-lsp"
+            },
+            "command": "./gradlew",
+            "args": ["javaExecutable"],
+        },
+        {
+            "label": "build",
+            "dependsOn": [
+                "npm-watch",
+                "build-lsp"
+            ]
         }
     ]
 }
