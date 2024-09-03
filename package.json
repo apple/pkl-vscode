@@ -108,7 +108,7 @@
       }
     ],
     "configuration": {
-      "title": "Pkl LSP",
+      "title": "Pkl",
       "properties": {
         "pklLSP.path": {
           "type": "string",
@@ -119,6 +119,11 @@
           "type": "integer",
           "default": 5005,
           "description": "Debug port to launch pkl-lsp. This is an internal developer option."
+        },
+        "pkl.cli.path": {
+          "type": "string",
+          "default": null,
+          "description": "Path to pkl executable"
         }
       }
     }
