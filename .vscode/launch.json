@@ -9,7 +9,8 @@
             "args": ["--extensionDevelopmentPath=${workspaceFolder}" ],
             "sourceMaps": true,
             "outFiles": [ "${workspaceFolder}/out/**/*.js" ],
-            "preLaunchTask": "npm: watch"
+            "preLaunchTask": "build",
+            "trace": true
         },
         {
             "name": "Launch Tests",

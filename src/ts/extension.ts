@@ -19,14 +19,14 @@
 import * as vscode from "vscode";
 import { newPklLanguageSupport } from "./PklLanguageSupport";
 import {
-	LanguageClient,
-	LanguageClientOptions,
+  LanguageClient,
+  LanguageClientOptions,
   RequestType,
   TextDocumentIdentifier,
-	ServerOptions
-} from 'vscode-languageclient/node';
+  ServerOptions,
+} from "vscode-languageclient/node";
 
-let client: LanguageClient
+let client: LanguageClient;
 
 export async function activate(context: vscode.ExtensionContext) {
   const languageSupport = await newPklLanguageSupport();
@@ -42,59 +42,75 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   // lsp client
-  const pklLspPath: string = vscode.workspace.getConfiguration().get('pklLSP.path') ?? "";
-  const pklLspDebugPort: number = vscode.workspace.getConfiguration().get('pklLSP.debug.port') ?? 5005;
-  let serverOptions: ServerOptions = {
+  const pklLspPath: string = vscode.workspace.getConfiguration().get("pklLSP.path") ?? "";
+  const pklLspDebugPort: number =
+    vscode.workspace.getConfiguration().get("pklLSP.debug.port") ?? 5005;
+  const serverOptions: ServerOptions = {
     run: {
       command: pklLspPath,
       args: [],
-      options: {}
+      options: {},
     },
     debug: {
-      command: 'java',
+      command: "java",
       args: [
         `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${pklLspDebugPort}`,
-        '-jar',
+        "-jar",
         pklLspPath,
-        '--verbose'
+        "--verbose",
       ],
-      options: {}
-    }
+      options: {},
+    },
   };
 
-  let clientOptions: LanguageClientOptions = {
-    documentSelector: [{scheme: "file", language: "pkl"}, {scheme: "pkl", language: "pkl"}],
+  const clientOptions: LanguageClientOptions = {
+    documentSelector: [
+      { scheme: "file", language: "pkl" },
+      { scheme: "pkl", language: "pkl" },
+    ],
     markdown: {
-      isTrusted: true
-    }
+      isTrusted: true,
+    },
   };
 
   client = new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
 
   const pklProvider = createPklContentProvider(client);
 
-  context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("pkl", pklProvider));
+  context.subscriptions.push(
+    vscode.workspace.registerTextDocumentContentProvider("pkl", pklProvider)
+  );
 
   client.start();
 
-  context.subscriptions.push(vscode.commands.registerCommand("pkl.open.file", async (path: string, maybeLine: number | undefined, maybeCol: number | undefined) => {
-    const parsedUri = vscode.Uri.parse(path);
-    const editor = await vscode.window.showTextDocument(parsedUri);
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "pkl.open.file",
+      async (path: string, maybeLine: number | undefined, maybeCol: number | undefined) => {
+        const parsedUri = vscode.Uri.parse(path);
+        const editor = await vscode.window.showTextDocument(parsedUri);
 
-    let line = maybeLine ?? 0;
-    if (Number.isNaN(line)) {
-      line = 1;
-    }
-    let col = maybeCol ?? 0;
-    if (Number.isNaN(col)) {
-      col = 1;
-    }
-    const pos = new vscode.Position(line - 1, col - 1);
+        let line = maybeLine ?? 0;
+        if (Number.isNaN(line)) {
+          line = 1;
+        }
+        let col = maybeCol ?? 0;
+        if (Number.isNaN(col)) {
+          col = 1;
+        }
+        const pos = new vscode.Position(line - 1, col - 1);
 
-    const range = new vscode.Range(pos, pos);
-    editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
-  }));
+        const range = new vscode.Range(pos, pos);
+        editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
+      }
+    )
+  );
 
+  context.subscriptions.push(
+    vscode.commands.registerCommand("pkl.downloadPackage", async (packageUri: string) => {
+      await client.sendRequest(pklDownloadPackageRequest, packageUri);
+    })
+  );
 }
 
 // this method is called when your extension is deactivated
@@ -105,15 +121,26 @@ export function deactivate(): Thenable<void> | undefined {
 
 const pklEventEmitter = new vscode.EventEmitter<vscode.Uri>();
 
-const pklFileContentRequest = new RequestType<TextDocumentIdentifier, string, void>("pkl/fileContents");
+const pklFileContentRequest = new RequestType<TextDocumentIdentifier, string, void>(
+  "pkl/fileContents"
+);
+
+const pklDownloadPackageRequest = new RequestType<string, void, void>("pkl/downloadPackage");
 
 function createPklContentProvider(client: LanguageClient): vscode.TextDocumentContentProvider {
   return <vscode.TextDocumentContentProvider>{
     onDidChange: pklEventEmitter.event,
 
-    provideTextDocumentContent: async (uri: vscode.Uri, token: vscode.CancellationToken): Promise<string> => {
-      return client.sendRequest(pklFileContentRequest, { uri: uri.toString() }, token)
-        .then((content: string): string => content || "");
-    }
+    provideTextDocumentContent: async (
+      uri: vscode.Uri,
+      token: vscode.CancellationToken
+    ): Promise<string> => {
+      const content = await client.sendRequest(
+        pklFileContentRequest,
+        { uri: uri.toString() },
+        token
+      );
+      return content ?? "";
+    },
   };
 }
