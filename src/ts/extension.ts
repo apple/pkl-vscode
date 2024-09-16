@@ -25,6 +25,7 @@ import {
   TextDocumentIdentifier,
   ServerOptions,
 } from "vscode-languageclient/node";
+import { registerNotificationHandlers } from "./notifications";
 
 let client: LanguageClient;
 
@@ -66,10 +67,15 @@ export async function activate(context: vscode.ExtensionContext) {
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
       { scheme: "file", language: "pkl" },
-      { scheme: "pkl", language: "pkl" },
+      { scheme: "pkl-lsp", language: "pkl" },
     ],
     markdown: {
       isTrusted: true,
+    },
+    initializationOptions: {
+      extendedClientCapabilities: {
+        actionableRuntimeNotificationSupport: true,
+      },
     },
   };
 
@@ -78,7 +84,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const pklProvider = createPklContentProvider(client);
 
   context.subscriptions.push(
-    vscode.workspace.registerTextDocumentContentProvider("pkl", pklProvider)
+    vscode.workspace.registerTextDocumentContentProvider("pkl-lsp", pklProvider)
   );
 
   client.start();
@@ -111,6 +117,20 @@ export async function activate(context: vscode.ExtensionContext) {
       await client.sendRequest(pklDownloadPackageRequest, packageUri);
     })
   );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("pkl.syncProjects", async () => {
+      await client.sendRequest(pklSyncProjectsRequest, null);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("pkl.configure", async (configurationPath: string) => {
+      await vscode.commands.executeCommand("workbench.action.openSettings", configurationPath);
+    })
+  );
+
+  registerNotificationHandlers(client);
 }
 
 // this method is called when your extension is deactivated
@@ -126,6 +146,8 @@ const pklFileContentRequest = new RequestType<TextDocumentIdentifier, string, vo
 );
 
 const pklDownloadPackageRequest = new RequestType<string, void, void>("pkl/downloadPackage");
+
+const pklSyncProjectsRequest = new RequestType<void, void, void>("pkl/syncProjects");
 
 function createPklContentProvider(client: LanguageClient): vscode.TextDocumentContentProvider {
   return <vscode.TextDocumentContentProvider>{
