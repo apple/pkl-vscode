@@ -73,8 +73,10 @@ export async function activate(context: vscode.ExtensionContext) {
       isTrusted: true,
     },
     initializationOptions: {
+      renderOpenFileCommandInDocs: true,
       extendedClientCapabilities: {
-        actionableRuntimeNotificationSupport: true,
+        actionableRuntimeNotifications: true,
+        pklConfigureCommand: true,
       },
     },
   };
