@@ -76,9 +76,9 @@ export async function activate(context: vscode.ExtensionContext) {
       renderOpenFileCommandInDocs: true,
       extendedClientCapabilities: {
         actionableRuntimeNotifications: true,
-        pklConfigureCommand: true
-      }
-    }
+        pklConfigureCommand: true,
+      },
+    },
   };
 
   client = new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
