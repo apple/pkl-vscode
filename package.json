@@ -123,7 +123,8 @@
         "pkl.cli.path": {
           "type": "string",
           "default": null,
-          "description": "Path to pkl executable"
+          "description": "Path to pkl executable",
+          "scope": "Pkl"
         }
       }
     },
