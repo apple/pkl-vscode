@@ -126,7 +126,14 @@
           "description": "Path to pkl executable"
         }
       }
-    }
+    },
+    "commands": [
+      {
+        "category": "Pkl",
+        "title": "Sync Projects",
+        "command": "pkl.syncProjects"
+      }
+    ]
   },
   "scripts": {
     "clean": "rm -rf out/",
