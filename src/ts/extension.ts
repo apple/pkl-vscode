@@ -110,6 +110,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         const range = new vscode.Range(pos, pos);
         editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
+        editor.selections = [new vscode.Selection(pos, pos)];
       }
     )
   );
