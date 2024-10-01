@@ -17,7 +17,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { newPklLanguageSupport } from "./PklLanguageSupport";
+import { newPklSemanticTokenProvider } from "./PklSemanticTokensProvider";
 import {
   LanguageClient,
   LanguageClientOptions,
@@ -30,16 +30,14 @@ import { registerNotificationHandlers } from "./notifications";
 let client: LanguageClient;
 
 export async function activate(context: vscode.ExtensionContext) {
-  const languageSupport = await newPklLanguageSupport();
-  // const highlighter = await newSemanticHighlighter();
-  // const foldingRangeProvider = await newFoldingRangeProvider();
+  const semanticTokensProvider = await newPklSemanticTokenProvider();
   context.subscriptions.push(
     vscode.languages.registerDocumentSemanticTokensProvider(
       { language: "pkl" },
-      languageSupport,
-      languageSupport.legend
+      semanticTokensProvider,
+      semanticTokensProvider.legend
     ),
-    vscode.languages.registerFoldingRangeProvider({ language: "pkl" }, languageSupport)
+    vscode.languages.registerFoldingRangeProvider({ language: "pkl" }, semanticTokensProvider)
   );
 
   // lsp client
