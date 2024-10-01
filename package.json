@@ -20,8 +20,7 @@
     "vscode": "^1.59.0"
   },
   "categories": [
-    "Programming Languages",
-    "Snippets"
+    "Programming Languages"
   ],
   "main": "./out/main.js",
   "activationEvents": [
@@ -54,12 +53,6 @@
         "language": "pkl",
         "scopeName": "source.pkl",
         "path": "out/pkl.tmLanguage.json"
-      }
-    ],
-    "snippets": [
-      {
-        "language": "pkl",
-        "path": "out/pkl.snippets.json"
       }
     ],
     "semanticTokenTypes": [

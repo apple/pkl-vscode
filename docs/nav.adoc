@@ -3,4 +3,3 @@
 * xref:ROOT:features/index.adoc[Features]
 ** xref:ROOT:features/syntax-highlighting.adoc[Syntax Highlighting]
 ** xref:ROOT:features/bracket-matching.adoc[Bracket Matching]
-** xref:ROOT:features/code-snippets.adoc[Code Snippets]
