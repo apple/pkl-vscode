@@ -27,7 +27,7 @@ const highlightsQueries = fs.readFileSync(path.join(__dirname, "../queries/highl
   encoding: "utf-8",
 });
 
-class PklLanguageSupport
+class PklSemanticTokensProvider
   implements vscode.DocumentSemanticTokensProvider, vscode.FoldingRangeProvider
 {
   #previousTrees: Map<vscode.TextDocument, { version: number; tree: Parser.Tree }> = new Map();
@@ -115,10 +115,10 @@ class PklLanguageSupport
   }
 }
 
-export async function newPklLanguageSupport(): Promise<PklLanguageSupport> {
+export async function newPklSemanticTokenProvider(): Promise<PklSemanticTokensProvider> {
   await Parser.init();
   const language = await Parser.Language.load(path.join(__dirname, "pkl.wasm"));
   const parser = new Parser();
   parser.setLanguage(language);
-  return new PklLanguageSupport(parser);
+  return new PklSemanticTokensProvider(parser);
 }
