@@ -14,44 +14,41 @@
 // limitations under the License.
 //===----------------------------------------------------------------------===//
 
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { newPklSemanticTokenProvider } from "./PklSemanticTokensProvider";
-import {
-  LanguageClient,
-  LanguageClientOptions,
-  RequestType,
-  TextDocumentIdentifier,
-  ServerOptions,
-} from "vscode-languageclient/node";
+import { newPklSemanticTokenProvider } from "./providers/PklSemanticTokensProvider";
+import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient/node";
 import { registerNotificationHandlers } from "./notifications";
+import {
+  COMMAND_DOWNLOAD_PACKAGE,
+  COMMAND_OPEN_WORKSPACE_SETTINGS,
+  COMMAND_PKL_CONFIGURE,
+  COMMAND_PKL_OPEN_FILE,
+  COMMAND_RELOAD_WORKSPACE_WINDOW,
+  COMMAND_SYNC_PROJECTS,
+  CONFIG_LSP_PATH,
+} from "./consts";
+import config from "./config";
+import { pklDownloadPackageRequest, pklSyncProjectsRequest } from "./requests";
+import PklTextDocumentContentProvider from "./providers/PklTextDocumentContentProvider";
+import { JavaDistribution, onDidChangeJavaDistribution } from "./javaDistribution";
 
-let client: LanguageClient;
+export type LanguageClientRef = {
+  client?: LanguageClient;
+};
 
-export async function activate(context: vscode.ExtensionContext) {
-  const semanticTokensProvider = await newPklSemanticTokenProvider();
-  context.subscriptions.push(
-    vscode.languages.registerDocumentSemanticTokensProvider(
-      { language: "pkl" },
-      semanticTokensProvider,
-      semanticTokensProvider.legend
-    ),
-    vscode.languages.registerFoldingRangeProvider({ language: "pkl" }, semanticTokensProvider)
-  );
+let languageClientRef: LanguageClientRef = {};
 
-  // lsp client
-  const pklLspPath: string = vscode.workspace.getConfiguration().get("pklLSP.path") ?? "";
-  const pklLspDebugPort: number =
-    vscode.workspace.getConfiguration().get("pklLSP.debug.port") ?? 5005;
+function createLanguageClient(java: JavaDistribution) {
+  const pklLspPath = config.lspPath!!;
+  const pklLspDebugPort = config.lspDebugPort;
   const serverOptions: ServerOptions = {
     run: {
-      command: pklLspPath,
-      args: [],
+      command: java.path,
+      args: ["-jar", pklLspPath],
       options: {},
     },
     debug: {
-      command: "java",
+      command: java.path,
       args: [
         `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${pklLspDebugPort}`,
         "-jar",
@@ -61,7 +58,6 @@ export async function activate(context: vscode.ExtensionContext) {
       options: {},
     },
   };
-
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
       { scheme: "file", language: "pkl" },
@@ -78,20 +74,50 @@ export async function activate(context: vscode.ExtensionContext) {
       },
     },
   };
+  return new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
+}
 
-  client = new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
+async function startLspServer(java: JavaDistribution) {
+  if (languageClientRef.client?.needsStop() === true) {
+    const response = await vscode.window.showInformationMessage(
+      "The java path has changed, and the VSCode window needs to be reloaded to take effect.",
+      "Reload Window"
+    );
+    // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason.
+    if (response === "Reload Window") {
+      vscode.commands.executeCommand(COMMAND_RELOAD_WORKSPACE_WINDOW);
+      return;
+    }
+  }
+  console.log("Starting language server");
+  const client = createLanguageClient(java);
+  languageClientRef.client = client;
+  await client.start();
+  registerNotificationHandlers(client);
+}
 
-  const pklProvider = createPklContentProvider(client);
+async function registerSubscriptions(context: vscode.ExtensionContext) {
+  const semanticTokensProvider = await newPklSemanticTokenProvider();
 
   context.subscriptions.push(
-    vscode.workspace.registerTextDocumentContentProvider("pkl-lsp", pklProvider)
+    vscode.languages.registerDocumentSemanticTokensProvider(
+      { language: "pkl" },
+      semanticTokensProvider,
+      semanticTokensProvider.legend
+    ),
+    vscode.languages.registerFoldingRangeProvider({ language: "pkl" }, semanticTokensProvider)
   );
 
-  client.start();
+  context.subscriptions.push(
+    vscode.workspace.registerTextDocumentContentProvider(
+      "pkl-lsp",
+      new PklTextDocumentContentProvider(languageClientRef)
+    )
+  );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "pkl.open.file",
+      COMMAND_PKL_OPEN_FILE,
       async (path: string, maybeLine: number | undefined, maybeCol: number | undefined) => {
         const parsedUri = vscode.Uri.parse(path);
         const editor = await vscode.window.showTextDocument(parsedUri);
@@ -114,56 +140,55 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("pkl.downloadPackage", async (packageUri: string) => {
-      await client.sendRequest(pklDownloadPackageRequest, packageUri);
+    vscode.commands.registerCommand(COMMAND_DOWNLOAD_PACKAGE, async (packageUri: string) => {
+      if (languageClientRef.client === undefined) {
+        return;
+      }
+      await languageClientRef.client.sendRequest(pklDownloadPackageRequest, packageUri);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("pkl.syncProjects", async () => {
-      await client.sendRequest(pklSyncProjectsRequest, null);
+    vscode.commands.registerCommand(COMMAND_SYNC_PROJECTS, async () => {
+      if (languageClientRef.client === undefined) {
+        return;
+      }
+      await languageClientRef.client.sendRequest(pklSyncProjectsRequest, null);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("pkl.configure", async (configurationPath: string) => {
-      await vscode.commands.executeCommand("workbench.action.openSettings", configurationPath);
+    vscode.commands.registerCommand(COMMAND_PKL_CONFIGURE, async (configurationPath: string) => {
+      await vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, configurationPath);
     })
   );
-
-  registerNotificationHandlers(client);
 }
 
-// this method is called when your extension is deactivated
+async function askForLspJar() {
+  const response = await vscode.window.showWarningMessage(
+    "Path to pkl-lsp.jar not configured",
+    "Configure path to pkl-lsp.jar"
+  );
+  if (response === "Configure path to pkl-lsp.jar") {
+    vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_LSP_PATH);
+  }
+}
+
+export async function activate(context: vscode.ExtensionContext) {
+  await registerSubscriptions(context);
+  onDidChangeJavaDistribution(async (distribution) => {
+    // TODO: This is temporary logic; pkl-lsp should either be downloaded from the internet, or bundled together with vsix
+    const lspPath = config.lspPath;
+    if (lspPath == null) {
+      askForLspJar();
+      return;
+    }
+    startLspServer(distribution);
+  });
+}
+
 export function deactivate(): Thenable<void> | undefined {
-  if (!client) return undefined;
-  return client.stop();
-}
-
-const pklEventEmitter = new vscode.EventEmitter<vscode.Uri>();
-
-const pklFileContentRequest = new RequestType<TextDocumentIdentifier, string, void>(
-  "pkl/fileContents"
-);
-
-const pklDownloadPackageRequest = new RequestType<string, void, void>("pkl/downloadPackage");
-
-const pklSyncProjectsRequest = new RequestType<void, void, void>("pkl/syncProjects");
-
-function createPklContentProvider(client: LanguageClient): vscode.TextDocumentContentProvider {
-  return <vscode.TextDocumentContentProvider>{
-    onDidChange: pklEventEmitter.event,
-
-    provideTextDocumentContent: async (
-      uri: vscode.Uri,
-      token: vscode.CancellationToken
-    ): Promise<string> => {
-      const content = await client.sendRequest(
-        pklFileContentRequest,
-        { uri: uri.toString() },
-        token
-      );
-      return content ?? "";
-    },
-  };
+  if (languageClientRef.client?.needsStop() === true) {
+    return languageClientRef.client.stop();
+  }
 }

@@ -23,7 +23,7 @@
                 "cwd": "../pkl-lsp"
             },
             "command": "./gradlew",
-            "args": ["javaExecutable"],
+            "args": ["shadowJar"],
         },
         {
             "label": "build",
