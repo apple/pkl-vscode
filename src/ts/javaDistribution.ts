@@ -81,6 +81,8 @@ const findJavaInDir = async (dir: string) => {
   return null;
 };
 
+const CTA_CONFIGURE_JAVA_PATH = "Configure path to Java";
+
 /**
  * Find Java from either `$JAVA_HOME`, or `$PATH`.
  */
@@ -103,11 +105,11 @@ const findJavaFromSystem = async () => {
       }
     }
   }
-  const response = await vscode.window.showInformationMessage(
-    `Cannot find suitable java in $PATH or $JAVA_HOME. pkl-lsp requires Java ${MINIMUM_JAVA_VERSION} or higher.`,
-    "Configure path to Java"
+  const response = await vscode.window.showWarningMessage(
+    `Cannot find suitable Java in $PATH or $JAVA_HOME. pkl-vscode requires Java ${MINIMUM_JAVA_VERSION} or higher.`,
+    CTA_CONFIGURE_JAVA_PATH
   );
-  if (response === "Configure path to Java") {
+  if (response === CTA_CONFIGURE_JAVA_PATH) {
     vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_JAVA_PATH);
   }
 };
@@ -116,12 +118,12 @@ const handleConfiguredJavaPath = async (path: string) => {
   const distribution = await resolveJava(path);
   if (distribution === null) {
     vscode.window
-      .showInformationMessage(
-        `Could not resolve java version information from ${config.javaPath}. Ensure it is the path to the java executable.`,
-        "Configure path to Java"
+      .showWarningMessage(
+        `Could not resolve Java version information from ${config.javaPath}. Ensure it is the path to the Java executable.`,
+        CTA_CONFIGURE_JAVA_PATH
       )
       .then((response) => {
-        if (response === "Configure path to Java") {
+        if (response === CTA_CONFIGURE_JAVA_PATH) {
           vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_JAVA_PATH);
         }
       });
@@ -129,12 +131,12 @@ const handleConfiguredJavaPath = async (path: string) => {
   }
   if (distribution.version < MINIMUM_JAVA_VERSION) {
     vscode.window
-      .showInformationMessage(
-        `pkl-lsp requires Java ${MINIMUM_JAVA_VERSION} or higher, but found version ${distribution.version}`,
-        "Configure path to Java"
+      .showWarningMessage(
+        `pkl-vscode requires Java ${MINIMUM_JAVA_VERSION} or higher, but was configured to use version ${distribution.version} in ${CONFIG_JAVA_PATH}`,
+        CTA_CONFIGURE_JAVA_PATH
       )
       .then((response) => {
-        if (response === "Configure path to Java") {
+        if (response === CTA_CONFIGURE_JAVA_PATH) {
           vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_JAVA_PATH);
         }
       });

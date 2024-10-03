@@ -38,23 +38,6 @@ export type LanguageClientRef = {
 
 let languageClientRef: LanguageClientRef = {};
 
-const languageClientOptions: LanguageClientOptions = {
-  documentSelector: [
-    { scheme: "file", language: "pkl" },
-    { scheme: "pkl-lsp", language: "pkl" },
-  ],
-  markdown: {
-    isTrusted: true,
-  },
-  initializationOptions: {
-    renderOpenFileCommandInDocs: true,
-    extendedClientCapabilities: {
-      actionableRuntimeNotifications: true,
-      pklConfigureCommand: true,
-    },
-  },
-};
-
 function createLanguageClient(java: JavaDistribution) {
   const pklLspPath = config.lspPath!!;
   const pklLspDebugPort = config.lspDebugPort;
@@ -75,7 +58,23 @@ function createLanguageClient(java: JavaDistribution) {
       options: {},
     },
   };
-  return new LanguageClient("Pkl", "Pkl Language Server", serverOptions, languageClientOptions);
+  const clientOptions: LanguageClientOptions = {
+    documentSelector: [
+      { scheme: "file", language: "pkl" },
+      { scheme: "pkl-lsp", language: "pkl" },
+    ],
+    markdown: {
+      isTrusted: true,
+    },
+    initializationOptions: {
+      renderOpenFileCommandInDocs: true,
+      extendedClientCapabilities: {
+        actionableRuntimeNotifications: true,
+        pklConfigureCommand: true,
+      },
+    },
+  };
+  return new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
 }
 
 async function startLspServer(java: JavaDistribution) {
