@@ -27,7 +27,7 @@ const highlightsQueries = fs.readFileSync(path.join(__dirname, "../queries/highl
   encoding: "utf-8",
 });
 
-class PklSemanticTokensProvider
+export class PklSemanticTokensProvider
   implements vscode.DocumentSemanticTokensProvider, vscode.FoldingRangeProvider
 {
   #previousTrees: Map<vscode.TextDocument, { version: number; tree: Parser.Tree }> = new Map();

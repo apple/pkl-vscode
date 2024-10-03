@@ -60,6 +60,5 @@ export const actionableNotificationHandler: NotificationHandler<ActionableNotifi
 };
 
 export async function registerNotificationHandlers(client: LanguageClient) {
-  await client.onReady();
   client.onNotification(actionableNotificationType, actionableNotificationHandler);
 }

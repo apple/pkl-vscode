@@ -110,12 +110,12 @@
     "configuration": {
       "title": "Pkl",
       "properties": {
-        "pklLSP.path": {
+        "pkl.lsp.path": {
           "type": "string",
           "default": null,
           "description": "Path to pkl-lsp executable"
         },
-        "pklLSP.debug.port": {
+        "pkl.lsp.debug.port": {
           "type": "integer",
           "default": 5005,
           "description": "Debug port to launch pkl-lsp. This is an internal developer option."
@@ -125,6 +125,11 @@
           "default": null,
           "description": "Path to pkl executable",
           "scope": "Pkl"
+        },
+        "pkl.lsp.java.path": {
+          "type": "string",
+          "default": null,
+          "description": "Path to java executable used to start the LSP server."
         }
       }
     },
@@ -159,7 +164,7 @@
     "clone-grammar": "git submodule update --init --recursive"
   },
   "dependencies": {
-    "vscode-languageclient": "^7.0.0"
+    "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
     "@apple/tree-sitter-pkl": "^0.16.0",
