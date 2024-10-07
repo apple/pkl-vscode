@@ -14,29 +14,20 @@
 // limitations under the License.
 //===----------------------------------------------------------------------===//
 
-import { workspace } from "vscode";
-import { CONFIG_JAVA_PATH, CONFIG_LSP_DEBUG_PORT, CONFIG_LSP_PATH } from "./consts";
+import * as vscode from "vscode";
 
-const getConfig = <T>(configName: string) => {
-  const value = workspace.getConfiguration().get<T>(configName);
-  if (value === "") {
-    return undefined;
-  }
-  return value;
-};
+const channel = vscode.window.createOutputChannel("pkl-vscode");
 
-const config = {
-  get javaPath() {
-    return getConfig<string>(CONFIG_JAVA_PATH);
+const logger = {
+  log(message: string) {
+    channel.appendLine(`[LOG] ${message}`);
   },
-
-  get lspPath() {
-    return getConfig<string>(CONFIG_LSP_PATH);
+  warn(message: string) {
+    channel.appendLine(`[WARN] ${message}`);
   },
-
-  get lspDebugPort() {
-    return getConfig<number>(CONFIG_LSP_DEBUG_PORT);
+  error(message: string) {
+    channel.appendLine(`[ERROR] ${message}`);
   },
 };
 
-export default config;
+export default logger;

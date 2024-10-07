@@ -25,12 +25,24 @@ import {
   COMMAND_PKL_OPEN_FILE,
   COMMAND_RELOAD_WORKSPACE_WINDOW,
   COMMAND_SYNC_PROJECTS,
+  CONFIG_JAVA_PATH,
   CONFIG_LSP_PATH,
 } from "./consts";
 import config from "./config";
 import { pklDownloadPackageRequest, pklSyncProjectsRequest } from "./requests";
 import PklTextDocumentContentProvider from "./providers/PklTextDocumentContentProvider";
-import { JavaDistribution, onDidChangeJavaDistribution } from "./javaDistribution";
+import {
+  getJavaDistribution,
+  JavaDistribution,
+  onDidChangeJavaDistribution,
+} from "./javaDistribution";
+import {
+  getLspDistribution,
+  LspDistribution,
+  onDidChangeLspDistribution,
+} from "./pklLspDistribution";
+import { queryForLatestLspDistribution } from "./pklLspDistributionUpdater";
+import logger from "./clients/logger";
 
 export type LanguageClientRef = {
   client?: LanguageClient;
@@ -38,13 +50,12 @@ export type LanguageClientRef = {
 
 let languageClientRef: LanguageClientRef = {};
 
-function createLanguageClient(java: JavaDistribution) {
-  const pklLspPath = config.lspPath!!;
+function createLanguageClient(java: JavaDistribution, lspDistribution: LspDistribution) {
   const pklLspDebugPort = config.lspDebugPort;
   const serverOptions: ServerOptions = {
     run: {
       command: java.path,
-      args: ["-jar", pklLspPath],
+      args: ["-jar", lspDistribution.path],
       options: {},
     },
     debug: {
@@ -52,7 +63,7 @@ function createLanguageClient(java: JavaDistribution) {
       args: [
         `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${pklLspDebugPort}`,
         "-jar",
-        pklLspPath,
+        lspDistribution.path,
         "--verbose",
       ],
       options: {},
@@ -77,7 +88,7 @@ function createLanguageClient(java: JavaDistribution) {
   return new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
 }
 
-async function startLspServer(java: JavaDistribution) {
+async function startLspServer(java: JavaDistribution, lspDistribution: LspDistribution) {
   if (languageClientRef.client?.needsStop() === true) {
     const response = await vscode.window.showInformationMessage(
       "The java path has changed, and the VSCode window needs to be reloaded to take effect.",
@@ -89,8 +100,8 @@ async function startLspServer(java: JavaDistribution) {
       return;
     }
   }
-  console.log("Starting language server");
-  const client = createLanguageClient(java);
+  logger.log("Starting language server");
+  const client = createLanguageClient(java, lspDistribution);
   languageClientRef.client = client;
   await client.start();
   registerNotificationHandlers(client);
@@ -164,27 +175,30 @@ async function registerSubscriptions(context: vscode.ExtensionContext) {
   );
 }
 
-async function askForLspJar() {
-  const response = await vscode.window.showWarningMessage(
-    "Path to pkl-lsp.jar not configured",
-    "Configure path to pkl-lsp.jar"
-  );
-  if (response === "Configure path to pkl-lsp.jar") {
-    vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_LSP_PATH);
+const showRestartMessage = (configPath: string) => async () => {
+  if (languageClientRef.client?.needsStop() === true) {
+    const response = await vscode.window.showInformationMessage(
+      `The configuration value "${configPath}" has changed, and the VSCode window needs to be reloaded to take effect.`,
+      "Reload Window"
+    );
+    // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason.
+    if (response === "Reload Window") {
+      vscode.commands.executeCommand(COMMAND_RELOAD_WORKSPACE_WINDOW);
+      return;
+    }
   }
-}
+};
 
 export async function activate(context: vscode.ExtensionContext) {
   await registerSubscriptions(context);
-  onDidChangeJavaDistribution(async (distribution) => {
-    // TODO: This is temporary logic; pkl-lsp should either be downloaded from the internet, or bundled together with vsix
-    const lspPath = config.lspPath;
-    if (lspPath == null) {
-      askForLspJar();
-      return;
-    }
-    startLspServer(distribution);
-  });
+  const [javaDistribution, lspDistribution] = await Promise.all([
+    getJavaDistribution(),
+    getLspDistribution(),
+  ]);
+  startLspServer(javaDistribution, lspDistribution);
+  onDidChangeJavaDistribution(showRestartMessage(CONFIG_JAVA_PATH));
+  onDidChangeLspDistribution(showRestartMessage(CONFIG_LSP_PATH));
+  queryForLatestLspDistribution();
 }
 
 export function deactivate(): Thenable<void> | undefined {

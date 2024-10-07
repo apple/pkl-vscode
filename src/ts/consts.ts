@@ -14,6 +14,9 @@
 // limitations under the License.
 //===----------------------------------------------------------------------===//
 
+import path from "node:path";
+import os from "node:os";
+
 export const CONFIG_JAVA_PATH = "pkl.lsp.java.path";
 
 export const CONFIG_LSP_PATH = "pkl.lsp.path";
@@ -34,3 +37,15 @@ export const COMMAND_PKL_CONFIGURE = "pkl.configure";
 export const COMMAND_OPEN_WORKSPACE_SETTINGS = "workbench.action.openSettings";
 
 export const COMMAND_RELOAD_WORKSPACE_WINDOW = "workbench.action.reloadWindow";
+
+export const BUNDLED_LSP_VERSION = "0.1.0";
+
+/**
+ * The directory that pkl-lsp distributions get saved to.
+ *
+ * Structure: `~/.pkl/editor-support/lsp-distributions/<version>/pkl-lsp-<version>.jar`
+ */
+export const LSP_DISTRIBUTIONS_DIR = path.join(
+  os.homedir(),
+  ".pkl/editor-support/lsp-distributions/"
+);
