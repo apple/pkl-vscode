@@ -20,10 +20,16 @@ import * as vscode from "vscode";
 import { debounce, exec } from "./utils";
 import { COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_JAVA_PATH } from "./consts";
 import config from "./config";
+import logger from "./clients/logger";
 
 const emitter = new vscode.EventEmitter<JavaDistribution>();
 
 const MINIMUM_JAVA_VERSION = 22;
+
+/**
+ * The currently configured Java distribution, if any.
+ */
+export let currentJavaDistribution: JavaDistribution | undefined = undefined;
 
 /**
  * Fires when the java distribution changes due to users changing it in workspace/user settings.
@@ -33,6 +39,24 @@ const MINIMUM_JAVA_VERSION = 22;
  * Excludes Java versions that are incompatible.
  */
 export const onDidChangeJavaDistribution = emitter.event;
+
+export const getJavaDistribution = (): Promise<JavaDistribution> => {
+  return new Promise((resolve) => {
+    if (currentJavaDistribution !== undefined) {
+      resolve(currentJavaDistribution);
+      return;
+    }
+    const disposables: vscode.Disposable[] = [];
+    onDidChangeJavaDistribution(
+      (distribution) => {
+        resolve(distribution);
+        disposables.every((it) => it.dispose());
+      },
+      null,
+      disposables
+    );
+  });
+};
 
 export type JavaDistribution = {
   path: string;
@@ -49,19 +73,19 @@ const resolveJava = async (path: string): Promise<JavaDistribution | null> => {
     const { stderr } = result;
     const versionStr = stderr.split('"')[1];
     if (versionStr == null) {
-      console.warn(`Unexpected version string: ${stderr}`);
+      logger.warn(`Unexpected version string: ${stderr}`);
       return null;
     }
     const majorVersion = versionStr.split(".")[0];
     if (majorVersion == null) {
-      console.warn(`Malformed version: ${versionStr}`);
+      logger.warn(`Malformed version: ${versionStr}`);
       return null;
     }
     var version = parseInt(majorVersion);
     return { path, version };
   } catch (err: any) {
     if (err.code !== "ENOENT") {
-      console.warn(`Received unexpected error when spawning java: ${err}`);
+      logger.warn(`Received unexpected error when spawning java: ${err}`);
     }
     return null;
   }
@@ -142,10 +166,11 @@ const handleConfiguredJavaPath = async (path: string) => {
       });
     return;
   }
+  currentJavaDistribution = distribution;
   emitter.fire(distribution);
 };
 
-if (config.javaPath === undefined || config.javaPath === "") {
+if (config.javaPath === undefined) {
   findJavaFromSystem();
 } else {
   handleConfiguredJavaPath(config.javaPath);
@@ -154,11 +179,7 @@ if (config.javaPath === undefined || config.javaPath === "") {
 vscode.workspace.onDidChangeConfiguration(
   // debounce because vscode fires configuration changes _as_ users are typing.
   debounce(async (event: vscode.ConfigurationChangeEvent) => {
-    if (
-      !event.affectsConfiguration(CONFIG_JAVA_PATH) ||
-      config.javaPath === undefined ||
-      config.javaPath === ""
-    ) {
+    if (!event.affectsConfiguration(CONFIG_JAVA_PATH) || config.javaPath === undefined) {
       return;
     }
     handleConfiguredJavaPath(config.javaPath);
