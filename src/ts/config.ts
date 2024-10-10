@@ -17,9 +17,9 @@
 import { workspace } from "vscode";
 import { CONFIG_JAVA_PATH, CONFIG_LSP_DEBUG_PORT, CONFIG_LSP_PATH } from "./consts";
 
-const getConfig = <T>(configName: string) => {
+const getConfig = <T>(configName: string): T | undefined => {
   const value = workspace.getConfiguration().get<T>(configName);
-  if (value === "") {
+  if (value === "" || value === null) {
     return undefined;
   }
   return value;
