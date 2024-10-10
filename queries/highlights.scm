@@ -24,8 +24,8 @@
   ">" @bracket)
 
 (typeParameter (identifier) @type)
-(typeAnnotation (type (qualifiedIdentifier) @type))
-(newExpr (type (qualifiedIdentifier) @type))
+(typeAnnotation (type (declaredType) @type))
+(newExpr (type (declaredType) @type))
 
 ; Method calls
 
@@ -59,8 +59,8 @@
 ; Literals
 
 (stringConstant) @string
-(slStringLiteral) @string
-(mlStringLiteral) @string
+(slStringLiteralPart) @string
+(mlStringLiteralPart) @string
 
 (interpolationExpr
   "\\(" @stringEscape
@@ -126,6 +126,7 @@
 (trueLiteral) @constant
 (falseLiteral) @constant
 (nullLiteral) @constant
+"new" @control
 "if" @control
 "else" @control
 "import*" @keyword
@@ -138,9 +139,10 @@
 (traceExpr "trace" @keyword)
 (throwExpr "throw" @keyword)
 (moduleExpr "module" @type.defaultLibrary)
-"nothing" @type.defaultLibrary
+(unknownType) @type.defaultLibrary
+(nothingType) @type.defaultLibrary
+(moduleType) @type.defaultLibrary
 (outerExpr) @variable.defaultLibrary
 "super" @variable.defaultLibrary
 (thisExpr) @variable.builtin
-"unknown" @type.builtin
 (ERROR) @error
