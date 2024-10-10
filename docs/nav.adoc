@@ -1,5 +1,3 @@
 * xref:ROOT:installation.adoc[Installation]
-
-* xref:ROOT:features/index.adoc[Features]
-** xref:ROOT:features/syntax-highlighting.adoc[Syntax Highlighting]
-** xref:ROOT:features/bracket-matching.adoc[Bracket Matching]
+* xref:ROOT:features.adoc[Features]
+* xref:ROOT:changelog.adoc[Changelog]

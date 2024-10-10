@@ -1,6 +1,0 @@
-= Features
-
-xref:features/syntax-highlighting.adoc[Syntax Highlighting]::
-Have your code highlighted as you type.
-xref:features/bracket-matching.adoc[Bracket Matching]::
-Let the editor take care of indentation and closing brackets.

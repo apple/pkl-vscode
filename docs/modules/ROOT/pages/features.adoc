@@ -1,0 +1,14 @@
+= Features
+
+This plugin integrates with xref:lsp:ROOT:index.adoc[pkl-lsp] to provide code completion, hover-over documentation, project support, and more!
+
+== Supported features
+
+* Brace matching
+* Syntax highlighting
+* Code snippets
+* Go-to-definition
+* Hover-over documentation
+* Static code analysis
+
+The feature set grows as pkl-lsp improves over time.

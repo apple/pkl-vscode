@@ -1,5 +1,0 @@
-= Bracket Matching
-
-Let the editor take care of indentation and closing brackets.
-
-image::bracket-matching.gif[Bracket matching demo]
