@@ -108,6 +108,10 @@ const handleConfiguredLspDistribution = async (lspPath: string) => {
       vscode.window.showWarningMessage(
         `This version of pkl-vscode is not compatible with pkl-lsp version ${version}. Features are not guaranteed to work.`
       );
+    } else if (version.isLessThan(bundledDistribution.version)) {
+      vscode.window.showWarningMessage(
+        `The configured pkl-lsp distribution version (${version}) is lower than the bundled version (${BUNDLED_LSP_VERSION}). Features are not guaranteed to work.`
+      );
     }
     const distro = { path: lspPath, version };
     logger.log(`Using pkl-lsp.jar from configured ${CONFIG_LSP_PATH}`);
