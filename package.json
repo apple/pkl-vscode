@@ -106,7 +106,7 @@
         "pkl.lsp.path": {
           "type": "string",
           "default": null,
-          "description": "Path to pkl-lsp executable"
+          "description": "Path to pkl-lsp jar file. This is an internal developer option."
         },
         "pkl.lsp.debug.port": {
           "type": "integer",
@@ -122,7 +122,7 @@
         "pkl.lsp.java.path": {
           "type": "string",
           "default": null,
-          "description": "Path to java executable used to start the LSP server."
+          "description": "Path to java executable used to start pkl-lsp."
         }
       }
     },
@@ -161,7 +161,7 @@
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
-    "@apple/tree-sitter-pkl": "^0.16.0",
+    "@apple/tree-sitter-pkl": "^0.17.0",
     "@types/node": "^16.11.38",
     "@types/vscode": "^1.59.0",
     "esbuild": "^0.14.54",
