@@ -1,5 +1,37 @@
 = Changelog
 
+== 0.18.0 (2024-10-10)
+
+=== Additions
+
+* Add support for xref:lsp:ROOT:index.adoc[pkl-lsp]. The editor now ships with a version of pkl-lsp, and queries for updates when the extension starts up. The LSP currently requires Java 22 to run. This requirement will go away when pkl-lsp ships native executables. By default, pkl-vscode will look for Java in `$PATH`, and will prompt if it cannot be found, or is lower than 22 (https://github.com/apple/pkl-vscode/pull/19[#19], https://github.com/apple/pkl-vscode/pull/21[#21], https://github.com/apple/pkl-vscode/pull/22[#22], https://github.com/apple/pkl-vscode/pull/23[#23], https://github.com/apple/pkl-vscode/pull/24[#24], https://github.com/apple/pkl-vscode/pull/25[#25], https://github.com/apple/pkl-vscode/pull/27[#27], https://github.com/apple/pkl-vscode/pull/28[#28], https://github.com/apple/pkl-vscode/pull/32[#32]).
++
+These are the initial support features, and the list will grow over time as the LSP improves:
+
+** Hover-over documentation
+** Go-to-definition
+** Project syncing
+** Autocompletion
+** Viewing stdlib, https, and package sources
+** Resolving imports
+
+* Add command "Pkl: Sync projects".
+* Add new configuration items:
+** `pkl.cli.path`
+** `pkl.lsp.path`
+** `pkl.lsp.java.path`
+** `pkl.lsp.debug.port`
+
+=== Changes
+
+* Improve syntax highlighting (https://github.com/apple/pkl-vscode/pull/30[#30]).
+
+=== Miscellaneous
+
+* Change snippets from textmate snippets to pkl-lsp (https://github.com/apple/pkl-vscode/pull/25[#25]).
+* Rename some internal files (https://github.com/apple/pkl-vscode/pull/26[#26]).
+* Change some files to markdown (https://github.com/apple/pkl-vscode/pull/20[#20]).
+
 == 0.17.0 (2024-03-12)
 
 === Miscellaneous
