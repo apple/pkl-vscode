@@ -1,5 +1,6 @@
 = Changelog
 
+[[release-0.18.1]]
 == 0.18.1 (2024-10-14)
 
 === Fixes
@@ -7,6 +8,7 @@
 * Fixes an issue where the extension incorrectly tells users about misconfigured settings (https://github.com/apple/pkl-vscode/pull/35[#35]).
 * Fixes an issue where the extension swallows errors coming from starting Pkl Language Server (https://github.com/apple/pkl-vscode/pull/38[#38]).
 
+[[release-0.18.0]]
 == 0.18.0 (2024-10-10)
 
 === Additions
@@ -39,12 +41,14 @@ These are the initial support features, and the list will grow over time as the 
 * Rename some internal files (https://github.com/apple/pkl-vscode/pull/26[#26]).
 * Change some files to markdown (https://github.com/apple/pkl-vscode/pull/20[#20]).
 
+[[release-0.17.0]]
 == 0.17.0 (2024-03-12)
 
 === Miscellaneous
 
 * Changes Pkl TextMate grammar to link:https://github.com/apple/pkl.tmbundle[pkl.tmBundle]
 
+[[release-0.16.0]]
 == 0.16.0 (2024-02-28)
 
 === Fixes
@@ -62,6 +66,7 @@ Thank you to all the contributors for this release!
 
 * link:https://github.com/RedCMD[@RedCMD]
 
+[[release-0.15.0]]
 == 0.15.0 (2024-02-02)
 
 Initial release
