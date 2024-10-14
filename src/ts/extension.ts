@@ -88,17 +88,21 @@ function createLanguageClient(java: JavaDistribution, lspDistribution: LspDistri
   return new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
 }
 
+async function nofityReloadNeeded() {
+  const response = await vscode.window.showInformationMessage(
+    "The java path has changed, and the VSCode window needs to be reloaded to take effect.",
+    "Reload Window"
+  );
+  if (response === "Reload Window") {
+    vscode.commands.executeCommand(COMMAND_RELOAD_WORKSPACE_WINDOW);
+  }
+}
+
 async function startLspServer(java: JavaDistribution, lspDistribution: LspDistribution) {
   if (languageClientRef.client?.needsStop() === true) {
-    const response = await vscode.window.showInformationMessage(
-      "The java path has changed, and the VSCode window needs to be reloaded to take effect.",
-      "Reload Window"
-    );
-    // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason.
-    if (response === "Reload Window") {
-      vscode.commands.executeCommand(COMMAND_RELOAD_WORKSPACE_WINDOW);
-      return;
-    }
+    // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason, so we'll just ask users to reload the window.
+    nofityReloadNeeded();
+    return;
   }
   logger.log("Starting language server");
   const client = createLanguageClient(java, lspDistribution);
@@ -195,7 +199,7 @@ export async function activate(context: vscode.ExtensionContext) {
     getJavaDistribution(),
     getLspDistribution(),
   ]);
-  startLspServer(javaDistribution, lspDistribution);
+  await startLspServer(javaDistribution, lspDistribution);
   onDidChangeJavaDistribution(showRestartMessage(CONFIG_JAVA_PATH));
   onDidChangeLspDistribution(showRestartMessage(CONFIG_LSP_PATH));
   queryForLatestLspDistribution();
