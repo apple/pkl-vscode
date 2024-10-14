@@ -1,5 +1,12 @@
 = Changelog
 
+== 0.18.1 (2024-10-14)
+
+=== Fixes
+
+* Fixes an issue where the extension incorrectly tells users about misconfigured settings (https://github.com/apple/pkl-vscode/pull/35[#35]).
+* Fixes an issue where the extension swallows errors coming from starting Pkl Language Server (https://github.com/apple/pkl-vscode/pull/38[#38]).
+
 == 0.18.0 (2024-10-10)
 
 === Additions
