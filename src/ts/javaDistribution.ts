@@ -17,7 +17,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import * as vscode from "vscode";
-import { debounce, exec } from "./utils";
+import { debounce, execFile } from "./utils";
 import { COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_JAVA_PATH } from "./consts";
 import config from "./config";
 import logger from "./clients/logger";
@@ -69,7 +69,7 @@ const resolveJava = async (path: string): Promise<JavaDistribution | null> => {
     if (!stats.isFile()) {
       return null;
     }
-    const result = await exec(`${path} -version`);
+    const result = await execFile(path, ["-version"]);
     const { stderr } = result;
     const versionStr = stderr.split('"')[1];
     if (versionStr == null) {
