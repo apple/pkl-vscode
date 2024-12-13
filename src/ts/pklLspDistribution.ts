@@ -17,7 +17,7 @@
 import path from "node:path";
 import config from "./config";
 import { getJavaDistribution } from "./javaDistribution";
-import { debounce, exec, isRegularFile } from "./utils";
+import { debounce, execFile, isRegularFile } from "./utils";
 import Semver from "./Semver";
 import * as vscode from "vscode";
 import fs from "fs/promises";
@@ -65,7 +65,7 @@ export const bundledDistribution: LspDistribution = {
 
 const getLspVersion = async (jarPath: string): Promise<Semver | undefined> => {
   const javaDistribution = await getJavaDistribution();
-  const { stdout } = await exec(`${javaDistribution.path} -jar ${jarPath} --version`);
+  const { stdout } = await execFile(javaDistribution.path, ["-jar", jarPath, "--version"]);
   const versionStr = stdout
     .replace(/\r?\n$/, "")
     .split(" version ")

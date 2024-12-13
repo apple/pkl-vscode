@@ -15,7 +15,7 @@
 //===----------------------------------------------------------------------===//
 
 import { promisify } from "node:util";
-import { exec as _exec } from "node:child_process";
+import { execFile as _execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import { createWriteStream } from "node:fs";
 import https from "node:https";
@@ -23,7 +23,7 @@ import crypto from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 
-export const exec = promisify(_exec);
+export const execFile = promisify(_execFile);
 
 export const debounce = <A extends any[]>(
   f: (...args: A) => any,
