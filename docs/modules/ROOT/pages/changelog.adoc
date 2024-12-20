@@ -1,5 +1,16 @@
 = Changelog
 
+[[release-0.18.2]]
+== 0.18.2 (2024-12-20)
+
+=== Fixes
+
+* Fix compatbility issues when running on Windows (https://github.com/apple/pkl-vscode/pull/41[#41]).
+
+=== Contributors ❤️
+
+* link:https://github.com/riccardopiola[@riccardopiola]
+
 [[release-0.18.1]]
 == 0.18.1 (2024-10-14)
 
