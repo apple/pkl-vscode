@@ -4,7 +4,7 @@ Pkl language support for [Visual Studio Code](https://code.visualstudio.com).
 
 ## Documentation
 
-The [user documentation](https://pkl-lang.org/vscode/current/index.html) provides [installation instructions](https://pkl-lang.org/vscode/current/installation.html) and a [feature overview](https://pkl-lang.org/vscode/current/features/index.html).
+The [user documentation](https://pkl-lang.org/vscode/current/index.html) provides [installation instructions](https://pkl-lang.org/vscode/current/installation.html) and a [feature overview](https://pkl-lang.org/vscode/current/features.html).
 
 ## Community
 
