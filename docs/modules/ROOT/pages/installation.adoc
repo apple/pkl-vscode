@@ -7,3 +7,13 @@ To install the extension,
 2. follow https://code.visualstudio.com/docs/editor/extension-gallery#_install-from-a-vsix[Install from a VSIX] in the VS Code docs.
 
 To confirm that the installation succeeded, open a _.pkl_ file and verify that syntax highlighting works.
+
+== Java requirement
+
+The extension currently requires Java 22+ in order to run the xref:lsp:ROOT:index.adoc[Pkl Language Server].
+
+By default, it will look for the Java either in `PATH`, or in `JAVA_HOME`.
+
+The path to the Java executable can also be set via the `pkl.lsp.java.path` setting.
+
+The Java requirement will be removed when the Pkl Language Server is published as a native executable. For more details, see https://github.com/apple/pkl-lsp/issues/60.
