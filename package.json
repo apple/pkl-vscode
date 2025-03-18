@@ -113,6 +113,14 @@
           "default": 5005,
           "description": "Debug port to launch pkl-lsp. This is an internal developer option."
         },
+        "pkl.lsp.socket.port": {
+          "type": "number",
+          "description": "Port of the LSP socket to talk to. Setting this takes precedence over `pkl.lsp.path`. This is an internal developer option."
+        },
+        "pkl.lsp.socket.host": {
+          "type": "string",
+          "description": "Host of the LSP socket to talk to. If unset or empty, defaults to localhost. This is an internal developer option."
+        },
         "pkl.cli.path": {
           "type": "string",
           "default": null,

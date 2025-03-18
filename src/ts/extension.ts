@@ -16,7 +16,12 @@
 
 import * as vscode from "vscode";
 import { newPklSemanticTokenProvider } from "./providers/PklSemanticTokensProvider";
-import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient/node";
+import {
+  LanguageClient,
+  LanguageClientOptions,
+  ServerOptions,
+  StreamInfo,
+} from "vscode-languageclient/node";
 import { registerNotificationHandlers } from "./notifications";
 import {
   COMMAND_DOWNLOAD_PACKAGE,
@@ -31,18 +36,11 @@ import {
 import config from "./config";
 import { pklDownloadPackageRequest, pklSyncProjectsRequest } from "./requests";
 import PklTextDocumentContentProvider from "./providers/PklTextDocumentContentProvider";
-import {
-  getJavaDistribution,
-  JavaDistribution,
-  onDidChangeJavaDistribution,
-} from "./javaDistribution";
-import {
-  getLspDistribution,
-  LspDistribution,
-  onDidChangeLspDistribution,
-} from "./pklLspDistribution";
+import { getJavaDistribution, onDidChangeJavaDistribution } from "./javaDistribution";
+import { getLspDistribution, onDidChangeLspDistribution } from "./pklLspDistribution";
 import { queryForLatestLspDistribution } from "./pklLspDistributionUpdater";
 import logger from "./clients/logger";
+import net from "net";
 
 export type LanguageClientRef = {
   client?: LanguageClient;
@@ -50,18 +48,38 @@ export type LanguageClientRef = {
 
 let languageClientRef: LanguageClientRef = {};
 
-function createLanguageClient(java: JavaDistribution, lspDistribution: LspDistribution) {
-  const pklLspDebugPort = config.lspDebugPort;
-  const serverOptions: ServerOptions = {
+async function getStreamInfo(): Promise<StreamInfo> {
+  const socketPort = config.lspSocketPort!!;
+  const socketHost = config.lspSocketHost || "localhost";
+  logger.log(`Connecting to socket ${socketHost}:${socketPort}`);
+  const socket = net.createConnection(socketPort, config.lspSocketHost);
+  await new Promise((resolve) => socket.once("connect", resolve));
+  logger.log(`Connected to socket ${socketHost}:${socketPort}`);
+  return {
+    reader: socket,
+    writer: socket,
+    detached: true,
+  };
+}
+
+async function getServerOptions(): Promise<ServerOptions> {
+  if (config.lspSocketPort) {
+    return getStreamInfo;
+  }
+  const [javaDistribution, lspDistribution] = await Promise.all([
+    getJavaDistribution(),
+    getLspDistribution(),
+  ]);
+  return {
     run: {
-      command: java.path,
+      command: javaDistribution.path,
       args: ["-jar", lspDistribution.path],
       options: {},
     },
     debug: {
-      command: java.path,
+      command: javaDistribution.path,
       args: [
-        `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${pklLspDebugPort}`,
+        `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${config.lspDebugPort}`,
         "-jar",
         lspDistribution.path,
         "--verbose",
@@ -69,6 +87,10 @@ function createLanguageClient(java: JavaDistribution, lspDistribution: LspDistri
       options: {},
     },
   };
+}
+
+async function createLanguageClient() {
+  const serverOptions = await getServerOptions();
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
       { scheme: "file", language: "pkl" },
@@ -98,14 +120,14 @@ async function nofityReloadNeeded() {
   }
 }
 
-async function startLspServer(java: JavaDistribution, lspDistribution: LspDistribution) {
+async function startLspServer() {
   if (languageClientRef.client?.needsStop() === true) {
     // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason, so we'll just ask users to reload the window.
     nofityReloadNeeded();
     return;
   }
   logger.log("Starting language server");
-  const client = createLanguageClient(java, lspDistribution);
+  const client = await createLanguageClient();
   languageClientRef.client = client;
   await client.start();
   registerNotificationHandlers(client);
@@ -195,11 +217,7 @@ const showRestartMessage = (configPath: string) => async () => {
 
 export async function activate(context: vscode.ExtensionContext) {
   await registerSubscriptions(context);
-  const [javaDistribution, lspDistribution] = await Promise.all([
-    getJavaDistribution(),
-    getLspDistribution(),
-  ]);
-  await startLspServer(javaDistribution, lspDistribution);
+  await startLspServer();
   onDidChangeJavaDistribution(showRestartMessage(CONFIG_JAVA_PATH));
   onDidChangeLspDistribution(showRestartMessage(CONFIG_LSP_PATH));
   queryForLatestLspDistribution();

@@ -21,6 +21,10 @@ export const CONFIG_JAVA_PATH = "pkl.lsp.java.path";
 
 export const CONFIG_LSP_PATH = "pkl.lsp.path";
 
+export const CONFIG_LSP_SOCKET_PORT = "pkl.lsp.socket.port";
+
+export const CONFIG_LSP_SOCKET_HOST = "pkl.lsp.socket.host";
+
 export const CONFIG_LSP_DEBUG_PORT = "pkl.lsp.debug.port";
 
 // only used by the LSP server
