@@ -15,7 +15,13 @@
  */
 
 import { workspace } from "vscode";
-import { CONFIG_JAVA_PATH, CONFIG_LSP_DEBUG_PORT, CONFIG_LSP_PATH } from "./consts";
+import {
+  CONFIG_JAVA_PATH,
+  CONFIG_LSP_DEBUG_PORT,
+  CONFIG_LSP_PATH,
+  CONFIG_LSP_SOCKET_HOST,
+  CONFIG_LSP_SOCKET_PORT,
+} from "./consts";
 
 const getConfig = <T>(configName: string): T | undefined => {
   const value = workspace.getConfiguration().get<T>(configName);
@@ -36,6 +42,14 @@ const config = {
 
   get lspDebugPort() {
     return getConfig<number>(CONFIG_LSP_DEBUG_PORT);
+  },
+
+  get lspSocketPort() {
+    return getConfig<number>(CONFIG_LSP_SOCKET_PORT);
+  },
+
+  get lspSocketHost() {
+    return getConfig<string>(CONFIG_LSP_SOCKET_HOST);
   },
 };
 
