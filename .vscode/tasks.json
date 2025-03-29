@@ -3,11 +3,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "npm-watch",
+            "label": "npm-build-code",
             "type": "npm",
-            "script": "watch",
-            "problemMatcher": "$esbuild-watch",
-            "isBackground": true,
+            "script": "build:code",
+            "isBackground": false,
             "presentation": {
                 "reveal": "never"
             },
@@ -28,7 +27,7 @@
         {
             "label": "build",
             "dependsOn": [
-                "npm-watch",
+                "npm-build-code",
                 "build-lsp"
             ]
         }
