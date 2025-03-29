@@ -66,10 +66,8 @@ export const bundledDistribution: LspDistribution = {
 const getLspVersion = async (jarPath: string): Promise<Semver | undefined> => {
   const javaDistribution = await getJavaDistribution();
   const { stdout } = await execFile(javaDistribution.path, ["-jar", jarPath, "--version"]);
-  const versionStr = stdout
-    .replace(/\r?\n$/, "")
-    .split(" version ")
-    .findLast((it) => true);
+  const stdoutParts = stdout.replace(/\r?\n$/, "").split(" version ");
+  const versionStr = stdoutParts[stdoutParts.length - 1];
   if (versionStr === undefined) {
     logger.log(
       `Got malformed version output from jar file at ${jarPath}: ${stdout}. Expected "pkl-lsp version <version>"`

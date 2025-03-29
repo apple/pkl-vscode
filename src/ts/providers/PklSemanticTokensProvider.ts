@@ -31,35 +31,36 @@
 //===----------------------------------------------------------------------===//
 
 import vscode from "vscode";
-import Parser from "web-tree-sitter";
-import fs from "fs";
+import { Parser, Query, Tree, Language } from "web-tree-sitter";
+import fs from "fs/promises";
+import { readFileSync } from "fs";
 import path from "path";
 
-const foldsQueries = fs.readFileSync(path.join(__dirname, "../queries/folds.scm"), {
+const foldsQueries = readFileSync(path.join(__dirname, "../../queries/folds.scm"), {
   encoding: "utf-8",
 });
 
-const highlightsQueries = fs.readFileSync(path.join(__dirname, "../queries/highlights.scm"), {
+const highlightsQueries = readFileSync(path.join(__dirname, "../../queries/highlights.scm"), {
   encoding: "utf-8",
 });
 
 export class PklSemanticTokensProvider
   implements vscode.DocumentSemanticTokensProvider, vscode.FoldingRangeProvider
 {
-  #previousTrees: Map<vscode.TextDocument, { version: number; tree: Parser.Tree }> = new Map();
+  #previousTrees: Map<vscode.TextDocument, { version: number; tree: Tree }> = new Map();
 
   #parser: Parser;
 
-  #highlightsQuery: Parser.Query;
+  #highlightsQuery: Query;
 
-  #foldsQuery: Parser.Query;
+  #foldsQuery: Query;
 
   legend: vscode.SemanticTokensLegend;
 
   constructor(parser: Parser) {
     this.#parser = parser;
-    this.#highlightsQuery = parser.getLanguage().query(highlightsQueries);
-    this.#foldsQuery = parser.getLanguage().query(foldsQueries);
+    this.#highlightsQuery = new Query(parser.language!!, highlightsQueries);
+    this.#foldsQuery = new Query(parser.language!!, foldsQueries);
     this.legend = this.#buildLegend();
   }
 
@@ -80,12 +81,15 @@ export class PklSemanticTokensProvider
     return new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
   }
 
-  #parse(document: vscode.TextDocument): Parser.Tree {
+  #parse(document: vscode.TextDocument): Tree | null {
     const previousParse = this.#previousTrees.get(document);
     if (previousParse && previousParse.version === document.version) {
       return previousParse.tree;
     }
     const tree = this.#parser.parse(document.getText());
+    if (tree == null) {
+      return null;
+    }
     this.#previousTrees.set(document, { version: document.version, tree });
     return tree;
   }
@@ -95,6 +99,9 @@ export class PklSemanticTokensProvider
     _: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.SemanticTokens> {
     const tree = this.#parse(document);
+    if (tree == null) {
+      return null;
+    }
     const captures = this.#highlightsQuery.captures(tree.rootNode);
     const builder = new vscode.SemanticTokensBuilder(this.legend);
 
@@ -122,6 +129,9 @@ export class PklSemanticTokensProvider
     token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.FoldingRange[]> {
     const tree = this.#parse(document);
+    if (tree == null) {
+      return null;
+    }
     const captures = this.#foldsQuery.captures(tree.rootNode);
     return captures
       .filter((it) => it.node.endPosition.row > it.node.startPosition.row)
@@ -133,8 +143,9 @@ export class PklSemanticTokensProvider
 
 export async function newPklSemanticTokenProvider(): Promise<PklSemanticTokensProvider> {
   await Parser.init();
-  const language = await Parser.Language.load(path.join(__dirname, "pkl.wasm"));
   const parser = new Parser();
+  const wasmBytes = await fs.readFile(path.join(__dirname, "../pkl.wasm"));
+  const language = await Language.load(wasmBytes);
   parser.setLanguage(language);
   return new PklSemanticTokensProvider(parser);
 }
