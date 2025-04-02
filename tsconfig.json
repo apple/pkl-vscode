@@ -6,6 +6,7 @@
         "lib": [
             "esnext"
         ],
+        "skipLibCheck": true,
         "sourceMap": true,
         "rootDir": "src/ts",
         "resolveJsonModule": true,
@@ -20,6 +21,7 @@
     },
     "exclude": [
         "node_modules",
-        ".vscode-test"
+        ".vscode-test",
+        "scripts"
     ]
 }

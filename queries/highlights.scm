@@ -12,88 +12,76 @@
 ; See the License for the specific language governing permissions and
 ; limitations under the License.
 
-; List of tokens supported by vscode:
-; https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#standard-token-types-and-modifiers
-; we treat the first identifier as the token type, and everything else as token modifiers.
-; The scope "foo.bar.baz" means { type: "foo", modifiers: ["bar", "baz"] }
-
-; Additional tokens are defined in package.json:
-; * punctuation
-; * punctuationBracket
-; * control
-; * error
-
-; Types
-
 (clazz (identifier) @class)
 (typeAlias (identifier) @type)
-((identifier) @type
- (match? @type "^[A-Z]"))
+(declaredType (qualifiedIdentifier (identifier) @type))
 (moduleClause (qualifiedIdentifier (identifier) @type))
-
-(annotation "@" @class)
-
+(annotation "@" @decorator (qualifiedIdentifier) @decorator)
 (typeArgumentList
   "<" @bracket
   ">" @bracket)
 
 (typeParameter (identifier) @type)
-(typeAnnotation (type (declaredType) @type))
-(newExpr (type (declaredType) @type))
 
-; Method calls
+(unqualifiedAccessExpr
+  (identifier) @method (argumentList))
 
-(methodCallExpr
-  (identifier) @method)
+(unqualifiedAccessExpr
+  (identifier) @property)
 
-; Method definitions
+(qualifiedAccessExpr
+  (identifier) @method (argumentList))
+
+(qualifiedAccessExpr
+  (identifier) @property)
 
 (classMethod (methodHeader (identifier) @method))
 (objectMethod (methodHeader (identifier) @method))
 
-; Identifiers
-
 (classProperty (identifier) @property)
 (objectProperty (identifier) @property)
 
-(parameterList (typedIdentifier (identifier) @parameter))
-(objectBodyParameters (typedIdentifier (identifier) @parameter))
-
-(annotation (qualifiedIdentifier (identifier) @decorator))
-(annotation "@" @decorator)
+(typedIdentifier (identifier) @parameter)
 
 (forGenerator (typedIdentifier (identifier) @variable))
 (letExpr (typedIdentifier (identifier) @variable))
-(variableExpr (identifier) @variable)
+
 (importClause (identifier) @variable)
 (importGlobClause (identifier) @variable)
-(variableObjectLiteral (identifier) @variable)
-(propertyCallExpr (identifier) @variable)
-
-; Literals
 
 (stringConstant) @string
 (slStringLiteralPart) @string
 (mlStringLiteralPart) @string
 
-(interpolationExpr
+(stringInterpolation
   "\\(" @stringEscape
   ")" @stringEscape) @none
 
-(interpolationExpr
+(stringInterpolation
  "\\#(" @stringEscape
  ")" @stringEscape) @none
 
-(interpolationExpr
+(stringInterpolation
   "\\##(" @stringEscape
   ")" @stringEscape) @none
 
+"\"" @string
+"#\"" @string
+"##\"" @string
+"###\"" @string
+"####\"" @string
+"#####\"" @string
+"\"#" @string
+"\"##" @string
+"\"###" @string
+"\"####" @string
+"\"#####" @string
+
 (escapeSequence) @stringEscape
 
-(intLiteral) @number
-(floatLiteral) @number
+(intLiteralExpr) @number
+(floatLiteralExpr) @number
 
-; Operators
 
 "??" @operator
 "="  @operator
@@ -132,24 +120,27 @@
 "{" @bracket
 "}" @bracket
 
-; Keywords
 
 "amends" @keyword
 "as" @keyword
 "extends" @keyword
-(trueLiteral) @constant
-(falseLiteral) @constant
-(nullLiteral) @constant
+"class" @keyword
+"typealias" @keyword
+"function" @keyword
+"module" @keyword
+(trueLiteralExpr) @constant
+(falseLiteralExpr) @constant
+(nullLiteralExpr) @constant
 "new" @control
 "if" @control
 "else" @control
 "import*" @keyword
 "import" @keyword
 (importExpr "import" @keyword)
-(importGlobExpr "import*" @keyword)
+(importExpr "import*" @keyword)
 (readExpr "read" @keyword)
-(readGlobExpr "read*" @keyword)
-(readOrNullExpr "read?" @keyword)
+(readExpr "read*" @keyword)
+(readExpr "read?" @keyword)
 (traceExpr "trace" @keyword)
 (throwExpr "throw" @keyword)
 (moduleExpr "module" @type.defaultLibrary)
