@@ -15,7 +15,7 @@
  */
 
 import { httpsDownload, httpsGetJson, httpsGetText } from "../utils";
-import path from "node:path";
+import path from "path";
 import Semver from "../Semver";
 
 export type MavenSolrResponse = {

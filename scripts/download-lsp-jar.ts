@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import path from "node:path";
+import path from "path";
 import { downloadArtifact } from "../src/ts/clients/maven";
 import { BUNDLED_LSP_VERSION } from "../src/ts/consts";
 

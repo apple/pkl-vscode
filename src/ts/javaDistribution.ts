@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import fs from "node:fs/promises";
-import path from "node:path";
+import fs from "fs/promises";
+import path from "path";
 import * as vscode from "vscode";
 import { debounce, execFile } from "./utils";
 import { COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_JAVA_PATH } from "./consts";

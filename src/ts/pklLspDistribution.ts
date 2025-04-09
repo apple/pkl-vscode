@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import path from "node:path";
+import path from "path";
 import config from "./config";
 import { getJavaDistribution } from "./javaDistribution";
 import { debounce, execFile, isRegularFile } from "./utils";

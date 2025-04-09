@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import path from "node:path";
+import path from "path";
 import { COMMAND_RELOAD_WORKSPACE_WINDOW, LSP_DISTRIBUTIONS_DIR } from "./consts";
 import { downloadArtifact, getLatestVersion } from "./clients/maven";
 import { isRegularFile } from "./utils";

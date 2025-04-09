@@ -36,11 +36,11 @@ import fs from "fs/promises";
 import { readFileSync } from "fs";
 import path from "path";
 
-const foldsQueries = readFileSync(path.join(__dirname, "../../queries/folds.scm"), {
+const foldsQueries = readFileSync(path.join(__dirname, "../queries/folds.scm"), {
   encoding: "utf-8",
 });
 
-const highlightsQueries = readFileSync(path.join(__dirname, "../../queries/highlights.scm"), {
+const highlightsQueries = readFileSync(path.join(__dirname, "../queries/highlights.scm"), {
   encoding: "utf-8",
 });
 
@@ -144,7 +144,7 @@ export class PklSemanticTokensProvider
 export async function newPklSemanticTokenProvider(): Promise<PklSemanticTokensProvider> {
   await Parser.init();
   const parser = new Parser();
-  const wasmBytes = await fs.readFile(path.join(__dirname, "../pkl.wasm"));
+  const wasmBytes = await fs.readFile(path.join(__dirname, "pkl.wasm"));
   const language = await Language.load(wasmBytes);
   parser.setLanguage(language);
   return new PklSemanticTokensProvider(parser);

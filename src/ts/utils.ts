@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { promisify } from "node:util";
-import { execFile as _execFile } from "node:child_process";
-import fs from "node:fs/promises";
-import { createWriteStream } from "node:fs";
-import https from "node:https";
-import crypto from "node:crypto";
-import os from "node:os";
-import path from "node:path";
+import { promisify } from "util";
+import { execFile as _execFile } from "child_process";
+import fs from "fs/promises";
+import { createWriteStream } from "fs";
+import https from "https";
+import crypto from "crypto";
+import os from "os";
+import path from "path";
 
 export const execFile = promisify(_execFile);
 

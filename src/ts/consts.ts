@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import path from "node:path";
-import os from "node:os";
+import path from "path";
+import os from "os";
 
 export const CONFIG_JAVA_PATH = "pkl.lsp.java.path";
 
