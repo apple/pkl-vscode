@@ -164,7 +164,8 @@
     "clone-grammar": "git submodule update --init --recursive"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1"
+    "vscode-languageclient": "^9.0.1",
+    "web-tree-sitter": "^0.25.3"
   },
   "devDependencies": {
     "@apple/tree-sitter-pkl": "^0.18.0",
@@ -178,7 +179,6 @@
     "tslint": "^5.8.0",
     "typescript": "^4.7.3",
     "vsce": "2.9",
-    "vscode-test": "^1.6.1",
-    "web-tree-sitter": "^0.25.3"
+    "vscode-test": "^1.6.1"
   }
 }
