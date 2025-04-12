@@ -11,6 +11,7 @@ includes = [
 
 excludes = [
     "docs",
+    "textmate-bundle"
 ]
 
 [git]
