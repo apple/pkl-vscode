@@ -84,9 +84,6 @@ export default class Semver {
   }
 
   isCompatibleWith(other: Semver) {
-    if (this.major === 0) {
-      return other.major === 0 && this.minor === other.minor && this.patch >= other.patch;
-    }
     return this.major === other.major && this.minor >= other.minor;
   }
 }
