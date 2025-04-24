@@ -1,5 +1,32 @@
 = Changelog
 
+[[release-0.19.0]]
+== 0.19.0 (2025-04-24)
+
+=== Additions
+
+* Add configuration options to configure the LSP socket port and host (https://github.com/apple/pkl-vscode/pull/49[#49]).
+
+=== Changes
+
+* Bump bundled version of pkl-lsp to 0.3.0 (https://github.com/apple/pkl-vscode/pull/54[#54]).
+* Consider any 0.x version of pkl-lsp as compatible (https://github.com/apple/pkl-vscode/pull/54[#54]).
++
+This change means that pkl-vscode will auto-discover newer versions of pkl-lsp that are greater than version 0.3.
+* Improve syntax highlighting (https://github.com/apple/pkl-vscode/pull/50[#50]).
+
+=== Miscellaneous
+
+* Change build to use vanilla `tsc` instead of `esbuild` (https://github.com/apple/pkl-vscode/pull/50[#50], https://github.com/apple/pkl-vscode/pull/52[#52]).
+* Use hawkeye to format/check license headers (https://github.com/apple/pkl-vscode/pull/48[#48]).
+* Documentation improvements (https://github.com/apple/pkl-vscode/pull/46[#46]).
+
+=== Contributors ❤️
+
+Thank you to all of our contributors!
+
+* https://github.com/KushalP[@KushalP]
+
 [[release-0.18.2]]
 == 0.18.2 (2024-12-20)
 
@@ -8,6 +35,8 @@
 * Fix compatbility issues when running on Windows (https://github.com/apple/pkl-vscode/pull/41[#41]).
 
 === Contributors ❤️
+
+Thank you to all of our contributors!
 
 * link:https://github.com/riccardopiola[@riccardopiola]
 
