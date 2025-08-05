@@ -67,6 +67,6 @@ export const downloadArtifact = async (
 };
 
 function extractVersion(xml: string): string | null {
-  const match = xml.match(/<latest>([0-9.]+)<\/latest>/);
+  const match = xml.match(/<latest>(.+)<\/latest>/);
   return match ? match[1] : null;
 }
