@@ -38,8 +38,8 @@ export const getLatestVersion = async (query: {
   group: string;
   artifact: string;
 }): Promise<Semver> => {
-  const groupSearch = query.group.replace('.', '/');
-  const artifactSearch = query.artifact.replace('.', '/');
+  const groupSearch = query.group.replace(".", "/");
+  const artifactSearch = query.artifact.replace(".", "/");
   const xml = await httpsGetText(
     `https://repo1.maven.org/maven2/${groupSearch}/${artifactSearch}/maven-metadata.xml`
   );
