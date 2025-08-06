@@ -1,5 +1,19 @@
 = Changelog
 
+[[release-0.20.0]]
+== 0.20.0 (2025-08-06)
+
+=== Changes
+
+* Bump bundled version of pkl-lsp to 0.4.0 (https://github.com/apple/pkl-vscode/pull/57[#57]).
+* Fix auto-discovery of new LSP versions (https://github.com/apple/pkl-vscode/pull/57[#57]).
+
+=== Contributors ❤️
+
+Thank you to all of our contributors!
+
+* https://github.com/stackoverflow[@stackoverflow]
+
 [[release-0.19.0]]
 == 0.19.0 (2025-04-24)
 
