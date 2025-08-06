@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { httpsDownload, httpsGetJson, httpsGetText } from "../utils";
+import { httpsDownload, httpsGetText } from "../utils";
 import path from "node:path";
 import Semver from "../Semver";
 
@@ -38,11 +38,13 @@ export const getLatestVersion = async (query: {
   group: string;
   artifact: string;
 }): Promise<Semver> => {
-  const response = await httpsGetJson<MavenSolrResponse>(
-    `https://search.maven.org/solrsearch/select?q=g:${query.group}+AND+a:${query.artifact}&wt=json`
+  const groupSearch = query.group.replace(".", "/");
+  const artifactSearch = query.artifact.replace(".", "/");
+  const xml = await httpsGetText(
+    `https://repo1.maven.org/maven2/${groupSearch}/${artifactSearch}/maven-metadata.xml`
   );
-  const versionString = response.response.docs[0]?.latestVersion;
-  const version = Semver.parse(versionString);
+  const versionString = extractVersion(xml);
+  const version = versionString ? Semver.parse(versionString) : null;
   if (version == null) {
     throw new Error(`Got an artifact from Maven that is not valid semver: ${versionString}`);
   }
@@ -63,3 +65,8 @@ export const downloadArtifact = async (
   const checksum = await httpsGetText(`https://repo1.maven.org/maven2/${checksumPath}`);
   await httpsDownload(`https://repo1.maven.org/maven2/${jarPath}`, destination, checksum);
 };
+
+function extractVersion(xml: string): string | null {
+  const match = xml.match(/<latest>(.+)<\/latest>/);
+  return match ? match[1] : null;
+}
