@@ -168,7 +168,7 @@
     "web-tree-sitter": "^0.25.3"
   },
   "devDependencies": {
-    "@apple/tree-sitter-pkl": "^0.18.0",
+    "@apple/tree-sitter-pkl": "^0.19.0",
     "@types/node": "^16.11.38",
     "@types/vscode": "^1.59.0",
     "prettier": "^2.6.2",
