@@ -17,7 +17,7 @@
 import { RequestType, TextDocumentIdentifier } from "vscode-languageclient/node";
 
 export const pklFileContentRequest = new RequestType<TextDocumentIdentifier, string, void>(
-  "pkl/fileContents"
+  "pkl/fileContents",
 );
 
 export const pklDownloadPackageRequest = new RequestType<string, void, void>("pkl/downloadPackage");

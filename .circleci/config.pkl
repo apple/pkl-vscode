@@ -39,7 +39,7 @@ jobs {
   ["build"] {
     docker {
       new {
-        image = "cimg/node:18.19.0"
+        image = "cimg/node:24.11.0"
       }
     }
     steps {

@@ -96,7 +96,7 @@ export class PklSemanticTokensProvider
 
   provideDocumentSemanticTokens(
     document: vscode.TextDocument,
-    _: vscode.CancellationToken
+    _: vscode.CancellationToken,
   ): vscode.ProviderResult<vscode.SemanticTokens> {
     const tree = this.#parse(document);
     if (tree == null) {
@@ -115,7 +115,7 @@ export class PklSemanticTokensProvider
       }
       const range = new vscode.Range(
         new vscode.Position(node.startPosition.row, node.startPosition.column),
-        new vscode.Position(node.endPosition.row, node.endPosition.column)
+        new vscode.Position(node.endPosition.row, node.endPosition.column),
       );
       builder.push(range, term, modifiers);
     }
@@ -126,7 +126,7 @@ export class PklSemanticTokensProvider
   provideFoldingRanges(
     document: vscode.TextDocument,
     context: vscode.FoldingContext,
-    token: vscode.CancellationToken
+    token: vscode.CancellationToken,
   ): vscode.ProviderResult<vscode.FoldingRange[]> {
     const tree = this.#parse(document);
     if (tree == null) {

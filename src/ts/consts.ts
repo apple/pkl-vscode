@@ -51,5 +51,5 @@ export const BUNDLED_LSP_VERSION = "0.4.0";
  */
 export const LSP_DISTRIBUTIONS_DIR = path.join(
   os.homedir(),
-  ".pkl/editor-support/lsp-distributions/"
+  ".pkl/editor-support/lsp-distributions/",
 );

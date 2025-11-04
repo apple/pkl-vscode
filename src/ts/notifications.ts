@@ -34,7 +34,7 @@ export const actionableNotificationType: NotificationType<ActionableNotification
   new NotificationType<ActionableNotification>("pkl/actionableNotification");
 
 export const actionableNotificationHandler: NotificationHandler<ActionableNotification> = async (
-  notification
+  notification,
 ) => {
   let response: string | undefined = undefined;
   const titles = notification.commands.map((it) => it.title);

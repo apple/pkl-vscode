@@ -49,12 +49,12 @@ export default class PklTextDocumentContentProvider implements vscode.TextDocume
 
   async provideTextDocumentContent(
     uri: vscode.Uri,
-    token: vscode.CancellationToken
+    token: vscode.CancellationToken,
   ): Promise<string> {
     const content = await this.#languageClientBox.client?.sendRequest(
       pklFileContentRequest,
       { uri: uri.toString() },
-      token
+      token,
     );
     return content ?? "";
   }

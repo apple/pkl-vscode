@@ -53,7 +53,7 @@ export const getJavaDistribution = (): Promise<JavaDistribution> => {
         disposables.every((it) => it.dispose());
       },
       null,
-      disposables
+      disposables,
     );
   });
 };
@@ -131,7 +131,7 @@ const findJavaFromSystem = async () => {
   }
   const response = await vscode.window.showWarningMessage(
     `Cannot find suitable Java in $PATH or $JAVA_HOME. pkl-vscode requires Java ${MINIMUM_JAVA_VERSION} or higher.`,
-    CTA_CONFIGURE_JAVA_PATH
+    CTA_CONFIGURE_JAVA_PATH,
   );
   if (response === CTA_CONFIGURE_JAVA_PATH) {
     vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_JAVA_PATH);
@@ -144,7 +144,7 @@ const handleConfiguredJavaPath = async (path: string) => {
     vscode.window
       .showWarningMessage(
         `Could not resolve Java version information from ${config.javaPath}. Ensure it is the path to the Java executable.`,
-        CTA_CONFIGURE_JAVA_PATH
+        CTA_CONFIGURE_JAVA_PATH,
       )
       .then((response) => {
         if (response === CTA_CONFIGURE_JAVA_PATH) {
@@ -157,7 +157,7 @@ const handleConfiguredJavaPath = async (path: string) => {
     vscode.window
       .showWarningMessage(
         `pkl-vscode requires Java ${MINIMUM_JAVA_VERSION} or higher, but was configured to use version ${distribution.version} in ${CONFIG_JAVA_PATH}`,
-        CTA_CONFIGURE_JAVA_PATH
+        CTA_CONFIGURE_JAVA_PATH,
       )
       .then((response) => {
         if (response === CTA_CONFIGURE_JAVA_PATH) {
@@ -183,5 +183,5 @@ vscode.workspace.onDidChangeConfiguration(
       return;
     }
     handleConfiguredJavaPath(config.javaPath);
-  }, 5000)
+  }, 5000),
 );

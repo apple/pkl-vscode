@@ -53,7 +53,7 @@ export const getLspDistribution = (): Promise<LspDistribution> => {
         disposables.every((it) => it.dispose());
       },
       null,
-      disposables
+      disposables,
     );
   });
 };
@@ -70,7 +70,7 @@ const getLspVersion = async (jarPath: string): Promise<Semver | undefined> => {
   const versionStr = stdoutParts[stdoutParts.length - 1];
   if (versionStr === undefined) {
     logger.log(
-      `Got malformed version output from jar file at ${jarPath}: ${stdout}. Expected "pkl-lsp version <version>"`
+      `Got malformed version output from jar file at ${jarPath}: ${stdout}. Expected "pkl-lsp version <version>"`,
     );
     return;
   }
@@ -87,7 +87,7 @@ const CTA_CONFIGURE_LSP_PATH = "Configure path to pkl-lsp";
 const tellInvalidConfiguredLspPath = async () => {
   const response = await vscode.window.showWarningMessage(
     `Configured path ${config.lspPath} is not a valid lsp jar.`,
-    CTA_CONFIGURE_LSP_PATH
+    CTA_CONFIGURE_LSP_PATH,
   );
   if (response === CTA_CONFIGURE_LSP_PATH) {
     vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, CONFIG_LSP_PATH);
@@ -104,11 +104,11 @@ const handleConfiguredLspDistribution = async (lspPath: string) => {
     // permit a higher version if it exists, but warn users about it.
     if (!version.isCompatibleWith(bundledDistribution.version)) {
       vscode.window.showWarningMessage(
-        `This version of pkl-vscode is not compatible with pkl-lsp version ${version}. Features are not guaranteed to work.`
+        `This version of pkl-vscode is not compatible with pkl-lsp version ${version}. Features are not guaranteed to work.`,
       );
     } else if (version.isLessThan(bundledDistribution.version)) {
       vscode.window.showWarningMessage(
-        `The configured pkl-lsp distribution version (${version}) is lower than the bundled version (${BUNDLED_LSP_VERSION}). Features are not guaranteed to work.`
+        `The configured pkl-lsp distribution version (${version}) is lower than the bundled version (${BUNDLED_LSP_VERSION}). Features are not guaranteed to work.`,
       );
     }
     const distro = { path: lspPath, version };
@@ -129,7 +129,7 @@ const getDownloadedDistribution = async (): Promise<LspDistribution | undefined>
     const versions = distroFolders
       .map(Semver.parse)
       .filter(
-        (it): it is Semver => it !== undefined && it.isCompatibleWith(bundledDistribution.version)
+        (it): it is Semver => it !== undefined && it.isCompatibleWith(bundledDistribution.version),
       )
       .sort((a, b) => -a.compareTo(b));
     for (const version of versions) {
@@ -150,7 +150,7 @@ vscode.workspace.onDidChangeConfiguration(
       return;
     }
     handleConfiguredLspDistribution(config.lspPath);
-  }, 5000)
+  }, 5000),
 );
 
 (async () => {

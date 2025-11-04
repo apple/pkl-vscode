@@ -113,7 +113,7 @@ async function createLanguageClient() {
 async function nofityReloadNeeded() {
   const response = await vscode.window.showInformationMessage(
     "The java path has changed, and the VSCode window needs to be reloaded to take effect.",
-    "Reload Window"
+    "Reload Window",
   );
   if (response === "Reload Window") {
     vscode.commands.executeCommand(COMMAND_RELOAD_WORKSPACE_WINDOW);
@@ -140,16 +140,16 @@ async function registerSubscriptions(context: vscode.ExtensionContext) {
     vscode.languages.registerDocumentSemanticTokensProvider(
       { language: "pkl" },
       semanticTokensProvider,
-      semanticTokensProvider.legend
+      semanticTokensProvider.legend,
     ),
-    vscode.languages.registerFoldingRangeProvider({ language: "pkl" }, semanticTokensProvider)
+    vscode.languages.registerFoldingRangeProvider({ language: "pkl" }, semanticTokensProvider),
   );
 
   context.subscriptions.push(
     vscode.workspace.registerTextDocumentContentProvider(
       "pkl-lsp",
-      new PklTextDocumentContentProvider(languageClientRef)
-    )
+      new PklTextDocumentContentProvider(languageClientRef),
+    ),
   );
 
   context.subscriptions.push(
@@ -172,8 +172,8 @@ async function registerSubscriptions(context: vscode.ExtensionContext) {
         const range = new vscode.Range(pos, pos);
         editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
         editor.selections = [new vscode.Selection(pos, pos)];
-      }
-    )
+      },
+    ),
   );
 
   context.subscriptions.push(
@@ -182,7 +182,7 @@ async function registerSubscriptions(context: vscode.ExtensionContext) {
         return;
       }
       await languageClientRef.client.sendRequest(pklDownloadPackageRequest, packageUri);
-    })
+    }),
   );
 
   context.subscriptions.push(
@@ -191,13 +191,13 @@ async function registerSubscriptions(context: vscode.ExtensionContext) {
         return;
       }
       await languageClientRef.client.sendRequest(pklSyncProjectsRequest, null);
-    })
+    }),
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(COMMAND_PKL_CONFIGURE, async (configurationPath: string) => {
       await vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, configurationPath);
-    })
+    }),
   );
 }
 
@@ -205,7 +205,7 @@ const showRestartMessage = (configPath: string) => async () => {
   if (languageClientRef.client?.needsStop() === true) {
     const response = await vscode.window.showInformationMessage(
       `The configuration value "${configPath}" has changed, and the VSCode window needs to be reloaded to take effect.`,
-      "Reload Window"
+      "Reload Window",
     );
     // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason.
     if (response === "Reload Window") {

@@ -45,7 +45,7 @@ jobs:
         paths:
         - .dist/vscode/*.*
     docker:
-    - image: cimg/node:18.19.0
+    - image: cimg/node:24.11.0
   do-release:
     steps:
     - attach_workspace:
