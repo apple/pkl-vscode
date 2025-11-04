@@ -1,5 +1,28 @@
 = Changelog
 
+[[release-0.21.0]]
+== 0.21.0 (2025-11-05)
+
+=== Additions
+
+* Add Pkl code formatting (https://github.com/apple/pkl-vscode/pull/64[#64], https://github.com/apple/pkl-vscode/pull/65[#65], https://github.com/apple/pkl-vscode/pull/67[#67]).
+* Add support for trailing commas (https://github.com/apple/pkl-vscode/pull/61[#61]).
+
+=== Changes
+
+* Bump bundled version of pkl-lsp to 0.5.1 (https://github.com/apple/pkl-vscode/pull/66[#66], https://github.com/apple/pkl-vscode/pull/67[#67]).
+
+=== Miscellaneous
+
+* Upgrade dependencies (https://github.com/apple/pkl-vscode/pull/62[#62]).
+
+=== Contributors ❤️
+
+Thank you to all of our contributors!
+
+* https://github.com/bioball[@bioball]
+* https://github.com/HT154[@HT154]
+
 [[release-0.20.0]]
 == 0.20.0 (2025-08-06)
 
@@ -46,7 +69,7 @@ Thank you to all of our contributors!
 
 === Fixes
 
-* Fix compatbility issues when running on Windows (https://github.com/apple/pkl-vscode/pull/41[#41]).
+* Fix compatibility issues when running on Windows (https://github.com/apple/pkl-vscode/pull/41[#41]).
 
 === Contributors ❤️
 
