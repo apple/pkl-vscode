@@ -27,7 +27,7 @@ export const execFile = promisify(_execFile);
 
 export const debounce = <A extends any[]>(
   f: (...args: A) => any,
-  wait: number
+  wait: number,
 ): ((...args: A) => void) => {
   let timeout: NodeJS.Timeout | undefined = undefined;
   return (...args: A) => {

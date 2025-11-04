@@ -32,7 +32,7 @@ export const queryForLatestLspDistribution = async () => {
     const pathOnDisk = path.join(
       LSP_DISTRIBUTIONS_DIR,
       latestVersion.toString(),
-      `pkl-lsp-${latestVersion}.jar`
+      `pkl-lsp-${latestVersion}.jar`,
     );
     const isFile = await isRegularFile(pathOnDisk);
     if (isFile) {
@@ -42,7 +42,7 @@ export const queryForLatestLspDistribution = async () => {
     }
     if (bundledDistribution.version.isGreaterThanOrEqualTo(latestVersion)) {
       logger.log(
-        `Latest version of pkl-lsp is ${latestVersion}, which is less than or equal to my built-in version.`
+        `Latest version of pkl-lsp is ${latestVersion}, which is less than or equal to my built-in version.`,
       );
       return;
     }
@@ -50,14 +50,14 @@ export const queryForLatestLspDistribution = async () => {
     const response = await vscode.window.showInformationMessage(
       `A new version of pkl-lsp (${latestVersion}) is available.`,
       callToAction,
-      "Later"
+      "Later",
     );
     if (response !== callToAction) {
       return;
     }
     await downloadArtifact(
       { group: "org.pkl-lang", artifact: "pkl-lsp", version: latestVersion.toString() },
-      pathOnDisk
+      pathOnDisk,
     );
     vscode.commands.executeCommand(COMMAND_RELOAD_WORKSPACE_WINDOW);
   } catch (err) {

@@ -41,7 +41,7 @@ export const getLatestVersion = async (query: {
   const groupSearch = query.group.replace(".", "/");
   const artifactSearch = query.artifact.replace(".", "/");
   const xml = await httpsGetText(
-    `https://repo1.maven.org/maven2/${groupSearch}/${artifactSearch}/maven-metadata.xml`
+    `https://repo1.maven.org/maven2/${groupSearch}/${artifactSearch}/maven-metadata.xml`,
   );
   const versionString = extractVersion(xml);
   const version = versionString ? Semver.parse(versionString) : null;
@@ -53,13 +53,13 @@ export const getLatestVersion = async (query: {
 
 export const downloadArtifact = async (
   coordinates: { group: string; artifact: string; version: string },
-  destination: string
+  destination: string,
 ) => {
   const jarPath = path.join(
     coordinates.group.replace(/\./g, "/"),
     coordinates.artifact,
     coordinates.version,
-    `${coordinates.artifact}-${coordinates.version}.jar`
+    `${coordinates.artifact}-${coordinates.version}.jar`,
   );
   const checksumPath = `${jarPath}.sha256`;
   const checksum = await httpsGetText(`https://repo1.maven.org/maven2/${checksumPath}`);
