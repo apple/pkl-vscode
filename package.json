@@ -133,10 +133,10 @@
           "description": "Path to java executable used to start pkl-lsp."
         },
         "pkl.formatter.grammarVersion": {
-          "type": "string",
-          "default": "2",
+          "type": "number",
+          "default": 2,
           "description": "Grammar version to use when formatting Pkl code",
-          "enum": ["1", "2"],
+          "enum": [1, 2],
           "enumDescriptions": [
             "Pkl 0.25 - 0.29",
             "Pkl 0.30+"
