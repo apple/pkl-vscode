@@ -19,6 +19,11 @@
   "engines": {
     "vscode": "^1.59.0"
   },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm"
+    }
+  },
   "categories": [
     "Programming Languages"
   ],
