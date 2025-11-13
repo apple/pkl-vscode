@@ -1,0 +1,81 @@
+# Do not modify!
+# This file was generated from a template using https://github.com/StefMa/pkl-gha
+
+name: Build (release branch)
+'on':
+  push:
+    branches:
+    - release/*
+    tags-ignore:
+    - '**'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        submodules: recursive
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 24.x
+    - name: Install emsdk
+      run: |-
+        git clone https://github.com/emscripten-core/emsdk
+        cd emsdk
+        ./emsdk install 2.0.24
+        ./emsdk activate 2.0.24
+        echo "${GITHUB_WORKSPACE}/emsdk" >> $GITHUB_PATH
+        echo "${GITHUB_WORKSPACE}/emsdk/upstream/emscripten" >> $GITHUB_PATH
+    - name: Set up Pkl
+      run: |-
+        mkdir /tmp/pkl
+        curl -L "https://github.com/apple/pkl/releases/download/0.30.0/pkl-linux-amd64" -o /tmp/pkl/pkl
+        chmod +x /tmp/pkl/pkl
+        echo '/tmp/pkl' >> $GITHUB_PATH
+    - run: npm ci
+    - run: npm run build
+    - run: npm test
+    - run: npm run lint
+    - run: npm run package-only
+    - uses: actions/upload-artifact@v5
+      with:
+        name: pkl-vscode-build-artifacts
+        path: .dist/vscode/*.*
+  test-format-license-headers:
+    name: hawkeye-check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+    - run: hawkeye check --config licenserc.toml --fail-if-unknown
+    container:
+      image: ghcr.io/korandoru/hawkeye@sha256:c3ab994c0d81f3d116aabf9afc534e18648e3e90d7525d741c1e99dd8166ec85
+  trigger-downstream-builds:
+    if: github.repository_owner == 'apple'
+    needs:
+    - build
+    - test-format-license-headers
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create app token
+      id: app-token
+      uses: actions/create-github-app-token@v2
+      with:
+        app-id: ${{ secrets.PKL_CI_CLIENT_ID }}
+        private-key: ${{ secrets.PKL_CI }}
+        owner: ${{ github.repository_owner }}
+    - name: Trigger pkl-lang.org build
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: |-
+        gh workflow run \
+          --repo apple/pkl-lang.org \
+          --ref main \
+          --field source_run="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+          main.yml

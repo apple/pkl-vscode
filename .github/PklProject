@@ -1,5 +1,5 @@
 //===----------------------------------------------------------------------===//
-// Copyright © 2024-2025 Apple Inc. and the Pkl project authors. All rights reserved.
+// Copyright © 2025 Apple Inc. and the Pkl project authors. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
 // limitations under the License.
 //===----------------------------------------------------------------------===//
 
-amends "../../textmate-bundle/pkl/pkl.tmLanguage.pkl"
+amends "pkl:Project"
 
-output {
-  renderer = new JsonRenderer {}
+dependencies {
+  ["pkl.impl.ghactions"] {
+    uri = "package://pkg.pkl-lang.org/pkl-project-commons/pkl.impl.ghactions@0.6.0"
+  }
+  ["gha"] { uri = "package://pkg.pkl-lang.org/github.com/stefma/pkl-gha/com.github.action@0.0.6" }
 }
