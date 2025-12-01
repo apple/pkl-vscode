@@ -19,6 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v5
       with:
+        persist-credentials: false
         submodules: recursive
     - uses: actions/setup-node@v6
       with:
@@ -52,6 +53,7 @@ jobs:
     steps:
     - uses: actions/checkout@v5
       with:
+        persist-credentials: false
         fetch-depth: 0
     - run: hawkeye check --config licenserc.toml --fail-if-unknown
     container:
