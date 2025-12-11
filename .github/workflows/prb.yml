@@ -1,6 +1,4 @@
-# Do not modify!
-# This file was generated from a template using https://github.com/StefMa/pkl-gha
-
+# Generated from Workflow.pkl. DO NOT EDIT.
 name: Pull Request
 'on':
   pull_request: {}
@@ -13,11 +11,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       with:
         persist-credentials: false
         submodules: recursive
-    - uses: actions/setup-node@v6
+    - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6
       with:
         node-version: 24.x
     - name: Install emsdk
@@ -39,7 +37,7 @@ jobs:
     - run: npm test
     - run: npm run lint
     - run: npm run package-only
-    - uses: actions/upload-artifact@v5
+    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
       with:
         name: pkl-vscode-build-artifacts
         path: .dist/vscode/*.*
@@ -47,7 +45,7 @@ jobs:
     name: hawkeye-check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       with:
         persist-credentials: false
         fetch-depth: 0
@@ -59,14 +57,14 @@ jobs:
     steps:
     - name: Upload event file
       if: '!cancelled()'
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
       with:
         name: test-results-event-file
         path: ${{ github.event_path }}
   check-pkl-github-actions:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       with:
         persist-credentials: false
     - name: Setup Pkl
