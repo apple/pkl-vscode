@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024-2025 Apple Inc. and the Pkl project authors. All rights reserved.
+ * Copyright © 2024-2026 Apple Inc. and the Pkl project authors. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ export const CONFIG_LSP_DEBUG_PORT = "pkl.lsp.debug.port";
 
 // only used by the LSP server
 export const CONFIG_CLI_PATH = "pkl.cli.path";
+
+// only used by the LSP server
+export const CONFIG_PROJECTS_EXCLUDED_DIRECTORIES = "pkl.projects.excludedDirectories";
 
 export const COMMAND_DOWNLOAD_PACKAGE = "pkl.downloadPackage";
 
