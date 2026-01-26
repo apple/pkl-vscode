@@ -146,6 +146,14 @@
             "Pkl 0.25 - 0.29",
             "Pkl 0.30+"
           ]
+        },
+        "pkl.projects.excludedDirectories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "List of directories to exclude when discovering Pkl projects. Supports glob patterns (* and **)."
         }
       }
     },
