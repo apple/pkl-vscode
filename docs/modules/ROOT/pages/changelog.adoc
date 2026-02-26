@@ -1,5 +1,28 @@
 = Changelog
 
+[[release-0.22.0]]
+== 0.22.0 (2026-02-27)
+
+=== Additions
+
+* Add configuration option for excluding directories from `PklProject` sync (pr:https://github.com/apple/pkl-vscode/pull/79[]).
+
+=== Changes
+
+* Bump bundled version of pkl-lsp to 0.6.0 (pr:https://github.com/apple/pkl-vscode/pull/81[]).
+
+=== Miscellaneous
+
+* Upgrade dependencies (pr:https://github.com/apple/pkl-vscode/pull/72[])
+
+=== Contributors ❤️
+
+Thank you to all of our contributors!
+
+* https://github.com/bioball[@bioball]
+* https://github.com/HT154[@HT154]
+* https://github.com/stackoverflow[@stackoverflow]
+
 [[release-0.21.0]]
 == 0.21.0 (2025-11-05)
 
