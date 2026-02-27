@@ -45,7 +45,7 @@ export const COMMAND_OPEN_WORKSPACE_SETTINGS = "workbench.action.openSettings";
 
 export const COMMAND_RELOAD_WORKSPACE_WINDOW = "workbench.action.reloadWindow";
 
-export const BUNDLED_LSP_VERSION = "0.5.1";
+export const BUNDLED_LSP_VERSION = "0.6.0";
 
 /**
  * The directory that pkl-lsp distributions get saved to.
