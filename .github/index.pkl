@@ -122,3 +122,30 @@ release = (buildAndTest) {
     }
   }
 }
+
+dependabot {
+  updates {
+    new {
+      `package-ecosystem` = "npm"
+      schedule {
+        interval = "weekly"
+      }
+      directory = "/"
+      cooldown {
+        `default-days` = 7
+        exclude {
+          "@apple/*"
+        }
+      }
+    }
+  }
+}
+
+codeql {
+  scans {
+    new {
+      language = "javascript-typescript"
+      buildMode = "none"
+    }
+  }
+}
