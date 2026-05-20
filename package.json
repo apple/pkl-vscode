@@ -108,6 +108,14 @@
     "configuration": {
       "title": "Pkl",
       "properties": {
+        "pkl.modulepath": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "markdownDescription": "List of directories or zip archives to resolve `modulepath:` URIs against. Relative paths are resolved against the workspace root. Requires pkl-lsp 0.7.0 or newer.",
+          "description": "List of directories or zip archives to resolve `modulepath:` URIs against. Relative paths are resolved against the workspace root. Requires pkl-lsp 0.7.0 or newer."
+        },
         "pkl.lsp.path": {
           "type": "string",
           "default": null,
@@ -120,6 +128,7 @@
         },
         "pkl.lsp.socket.port": {
           "type": "number",
+          "markdownDescription": "Port of the LSP socket to talk to. Setting this takes precedence over `pkl.lsp.path`. This is an internal developer option.",
           "description": "Port of the LSP socket to talk to. Setting this takes precedence over `pkl.lsp.path`. This is an internal developer option."
         },
         "pkl.lsp.socket.host": {
