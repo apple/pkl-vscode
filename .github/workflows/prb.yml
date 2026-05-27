@@ -20,8 +20,9 @@ jobs:
         node-version: 24.x
     - name: Install emsdk
       run: |-
-        git clone https://github.com/emscripten-core/emsdk
+        git clone https://github.com/emscripten-core/emsdk.git
         cd emsdk
+        git reset --hard 0dfff153dc3c596948ac088b8853006c570f2609
         ./emsdk install 2.0.24
         ./emsdk activate 2.0.24
         echo "${GITHUB_WORKSPACE}/emsdk" >> $GITHUB_PATH

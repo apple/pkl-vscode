@@ -21,6 +21,7 @@ import "@com.github.actions/context.pkl"
 import "@com.github.actions/Workflow.pkl"
 import "@pkl.impl.ghactions/jobs/HawkeyeCheck.pkl"
 
+local emsdkRef: String(matches(Regex("[a-f0-9]{40}"))) = "0dfff153dc3c596948ac088b8853006c570f2609"
 local emsdkVersion = "2.0.24"
 local pklVersion = "0.30.0"
 
@@ -47,8 +48,9 @@ local buildAndTest: Workflow = new {
           name = "Install emsdk"
           run =
             #"""
-            git clone https://github.com/emscripten-core/emsdk
+            git clone https://github.com/emscripten-core/emsdk.git
             cd emsdk
+            git reset --hard \#(emsdkRef)
             ./emsdk install \#(emsdkVersion)
             ./emsdk activate \#(emsdkVersion)
             echo "${GITHUB_WORKSPACE}/emsdk" >> $GITHUB_PATH
