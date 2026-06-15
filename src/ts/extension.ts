@@ -97,7 +97,10 @@ async function createLanguageClient() {
       { scheme: "pkl-lsp", language: "pkl" },
     ],
     markdown: {
-      isTrusted: true,
+      // restrict trusted `command:` links in server-supplied markdown.
+      isTrusted: {
+        enabledCommands: [COMMAND_PKL_OPEN_FILE, COMMAND_DOWNLOAD_PACKAGE],
+      },
     },
     initializationOptions: {
       renderOpenFileCommandInDocs: true,
