@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024-2025 Apple Inc. and the Pkl project authors. All rights reserved.
+ * Copyright © 2024-2026 Apple Inc. and the Pkl project authors. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,10 @@ async function createLanguageClient() {
       { scheme: "pkl-lsp", language: "pkl" },
     ],
     markdown: {
-      isTrusted: true,
+      // restrict trusted `command:` links in server-supplied markdown.
+      isTrusted: {
+        enabledCommands: [COMMAND_PKL_OPEN_FILE, COMMAND_DOWNLOAD_PACKAGE],
+      },
     },
     initializationOptions: {
       renderOpenFileCommandInDocs: true,
