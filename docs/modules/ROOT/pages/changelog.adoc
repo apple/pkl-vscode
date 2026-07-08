@@ -1,5 +1,28 @@
 = Changelog
 
+[[release-0.23.0]]
+== 0.23.0 (2026-07-08)
+
+=== Additions
+
+* Add configuration option for module path (pr:https://github.com/apple/pkl-vscode/pull/90[]).
+
+=== Changes
+
+* Bump bundled version of pkl-lsp to 0.8.0 (pr:https://github.com/apple/pkl-vscode/pull/100[]).
+
+=== Fixes
+
+* Appropriately restrict LSP-provided commands in markdown content (pr:https://github.com/apple/pkl-vscode/pull/99[]).
+
+=== Contributors ❤️
+
+Thank you to all of our contributors!
+
+* https://github.com/bioball[@bioball]
+* https://github.com/stackoverflow[@stackoverflow]
+
+
 [[release-0.22.0]]
 == 0.22.0 (2026-02-27)
 
