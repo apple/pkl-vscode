@@ -130,7 +130,7 @@ dependabot {
     new {
       `package-ecosystem` = "npm"
       schedule {
-        interval = "weekly"
+        interval = "quarterly"
       }
       directory = "/"
       cooldown {

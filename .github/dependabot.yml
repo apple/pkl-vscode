@@ -7,7 +7,7 @@ updates:
     - '@apple/*'
   directory: /
   schedule:
-    interval: weekly
+    interval: quarterly
 - package-ecosystem: github-actions
   cooldown:
     default-days: 7
