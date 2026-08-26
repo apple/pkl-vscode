@@ -138,8 +138,7 @@
         "pkl.cli.path": {
           "type": "string",
           "default": null,
-          "description": "Path to pkl executable",
-          "scope": "Pkl"
+          "description": "Path to pkl executable"
         },
         "pkl.lsp.java.path": {
           "type": "string",
