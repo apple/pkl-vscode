@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024-2025 Apple Inc. and the Pkl project authors. All rights reserved.
+ * Copyright © 2024-2026 Apple Inc. and the Pkl project authors. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,14 @@ import {
   NotificationHandler,
   LanguageClient,
 } from "vscode-languageclient/node";
+import logger from "./clients/logger";
+import {
+  COMMAND_DOWNLOAD_PACKAGE,
+  COMMAND_PKL_CONFIGURE,
+  COMMAND_PKL_OPEN_FILE,
+  COMMAND_RELOAD_WORKSPACE_WINDOW,
+  COMMAND_SYNC_PROJECTS,
+} from "./consts";
 
 export interface ActionableNotification {
   type: MessageType;
@@ -29,6 +37,15 @@ export interface ActionableNotification {
   data?: any;
   commands: Command[];
 }
+
+// the language server may only trigger commands that this extension registers itself
+const ALLOWED_COMMANDS: ReadonlySet<string> = new Set([
+  COMMAND_PKL_OPEN_FILE,
+  COMMAND_DOWNLOAD_PACKAGE,
+  COMMAND_SYNC_PROJECTS,
+  COMMAND_PKL_CONFIGURE,
+  COMMAND_RELOAD_WORKSPACE_WINDOW,
+]);
 
 export const actionableNotificationType: NotificationType<ActionableNotification> =
   new NotificationType<ActionableNotification>("pkl/actionableNotification");
@@ -54,7 +71,11 @@ export const actionableNotificationHandler: NotificationHandler<ActionableNotifi
     }
   }
   if (response != null) {
-    var command = notification.commands.find((it) => it.title == response)!!;
+    const command = notification.commands.find((it) => it.title == response)!!;
+    if (!ALLOWED_COMMANDS.has(command.command)) {
+      logger.error(`Refusing to run command requested by pkl-lsp: ${command.command}`);
+      return;
+    }
     vscode.commands.executeCommand(command.command, ...(command.arguments ?? []));
   }
 };
