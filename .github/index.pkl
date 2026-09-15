@@ -29,7 +29,7 @@ local buildArtifactsName = "pkl-vscode-build-artifacts"
 
 triggerDocsBuild = "release"
 
-local buildAndTest: Workflow = new {
+local function buildAndTest(cache: Boolean): Workflow = new {
   jobs {
     ["build"] {
       `runs-on` = "ubuntu-latest"
@@ -42,6 +42,9 @@ local buildAndTest: Workflow = new {
         (catalog.`actions/setup-node@v6`) {
           with {
             `node-version` = "24.x"
+            when (!cache) {
+              `package-manager-cache` = false
+            }
           }
         }
         new {
@@ -84,16 +87,16 @@ local buildAndTest: Workflow = new {
   }
 }
 
-prb = buildAndTest
-build = buildAndTest
-main = buildAndTest
-releaseBranch = buildAndTest
+prb = buildAndTest(true)
+build = buildAndTest(true)
+main = buildAndTest(true)
+releaseBranch = buildAndTest(false)
 
-release = (buildAndTest) {
+release = (releaseBranch) {
   jobs {
     ["deploy-github-release"] {
       `runs-on` = "ubuntu-latest"
-      needs = buildAndTest.jobs.keys.toListing()
+      needs = releaseBranch.jobs.keys.toListing()
       permissions {
         contents = "write"
       }
