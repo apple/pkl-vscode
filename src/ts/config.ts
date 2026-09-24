@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024-2025 Apple Inc. and the Pkl project authors. All rights reserved.
+ * Copyright © 2024-2026 Apple Inc. and the Pkl project authors. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,7 @@
  */
 
 import { workspace } from "vscode";
-import {
-  CONFIG_JAVA_PATH,
-  CONFIG_LSP_DEBUG_PORT,
-  CONFIG_LSP_PATH,
-  CONFIG_LSP_SOCKET_HOST,
-  CONFIG_LSP_SOCKET_PORT,
-} from "./consts";
+import { CONFIG_LSP_PATH, CONFIG_LSP_SOCKET_HOST, CONFIG_LSP_SOCKET_PORT } from "./consts";
 
 const getConfig = <T>(configName: string): T | undefined => {
   const value = workspace.getConfiguration().get<T>(configName);
@@ -32,16 +26,8 @@ const getConfig = <T>(configName: string): T | undefined => {
 };
 
 const config = {
-  get javaPath() {
-    return getConfig<string>(CONFIG_JAVA_PATH);
-  },
-
   get lspPath() {
     return getConfig<string>(CONFIG_LSP_PATH);
-  },
-
-  get lspDebugPort() {
-    return getConfig<number>(CONFIG_LSP_DEBUG_PORT);
   },
 
   get lspSocketPort() {
