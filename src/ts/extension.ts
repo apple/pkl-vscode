@@ -103,7 +103,7 @@ async function createLanguageClient() {
   return new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
 }
 
-async function nofityReloadNeeded() {
+async function notifyReloadNeeded() {
   const response = await vscode.window.showInformationMessage(
     "The language server has changed, and the VSCode window needs to be reloaded to take effect.",
     "Reload Window",
@@ -116,7 +116,7 @@ async function nofityReloadNeeded() {
 async function startLspServer() {
   if (languageClientRef.client?.needsStop() === true) {
     // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason, so we'll just ask users to reload the window.
-    nofityReloadNeeded();
+    notifyReloadNeeded();
     return;
   }
   logger.log("Starting language server");

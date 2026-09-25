@@ -67,7 +67,7 @@ export const getDownloadedDistributionPath = (version: Semver): string =>
 export const getLatestCompatibleLspRelease = async (): Promise<GitHubRelease | undefined> => {
   const release = await getLatestRelease(LSP_GITHUB_REPO);
   if (!release.version.isCompatibleWith(minimumLspVersion)) {
-    logger.log(`Latest version of pkl-lsp is ${release.version}, which I am not compatible with.`);
+    logger.log(`Latest version of pkl-lsp is ${release.version}, which is not compatible.`);
     return;
   }
   return release;
