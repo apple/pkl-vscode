@@ -8,12 +8,17 @@ To install the extension,
 
 To confirm that the installation succeeded, open a _.pkl_ file and verify that syntax highlighting works.
 
-== Java requirement
+== Pkl Language Server
 
-The extension currently requires Java 22+ in order to run the xref:lsp:ROOT:index.adoc[Pkl Language Server].
+Language features such as code completion, hover documentation, and diagnostics are provided by the xref:lsp:ROOT:index.adoc[Pkl Language Server] (`pkl-lsp`), version 0.9.0 or higher.
+The extension does not bundle it, and looks for it in this order:
 
-By default, it will look for the Java either in `PATH`, or in `JAVA_HOME`.
+1. The path configured in the `pkl.lsp.path` setting.
+2. A `pkl-lsp` executable in `PATH` (for example, one installed with `brew install pkl-lsp`).
+3. A `pkl-lsp` executable previously downloaded by the extension into `~/.pkl/editor-support/lsp-distributions/`.
 
-The path to the Java executable can also be set via the `pkl.lsp.java.path` setting.
+If `pkl-lsp` cannot be found, the extension offers to download the native executable for the current platform from https://github.com/apple/pkl-lsp/releases[GitHub].
+Executables downloaded this way are checked for updates when the extension starts.
 
-The Java requirement will be removed when the Pkl Language Server is published as a native executable. For more details, see https://github.com/apple/pkl-lsp/issues/60.
+Pre-built executables are available for macOS (aarch64), Linux (amd64 and aarch64), and Windows (amd64).
+On other platforms, see xref:lsp:ROOT:installation.adoc[Installation] in the Pkl Language Server documentation, and either place `pkl-lsp` in `PATH` or configure `pkl.lsp.path`.

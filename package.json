@@ -119,12 +119,8 @@
         "pkl.lsp.path": {
           "type": "string",
           "default": null,
-          "description": "Path to pkl-lsp jar file. This is an internal developer option."
-        },
-        "pkl.lsp.debug.port": {
-          "type": "integer",
-          "default": 5005,
-          "description": "Debug port to launch pkl-lsp. This is an internal developer option."
+          "markdownDescription": "Path to the `pkl-lsp` executable. If unset, `pkl-lsp` is looked up in `PATH`, and offered for download if it cannot be found.",
+          "description": "Path to the pkl-lsp executable. If unset, pkl-lsp is looked up in PATH, and offered for download if it cannot be found."
         },
         "pkl.lsp.socket.port": {
           "type": "number",
@@ -140,11 +136,6 @@
           "default": null,
           "description": "Path to pkl executable",
           "scope": "Pkl"
-        },
-        "pkl.lsp.java.path": {
-          "type": "string",
-          "default": null,
-          "description": "Path to java executable used to start pkl-lsp."
         },
         "pkl.formatter.grammarVersion": {
           "type": "string",
@@ -176,10 +167,9 @@
   },
   "scripts": {
     "clean": "shx rm -rf out/",
-    "build": "npm run clean && npm run build:pkl && npm run build:code && npm run build:tree-sitter && npm run build:download-lsp",
-    "build:local": "npm run clean && npm run build:pkl && npm run build:code && npm run build:tree-sitter:local && npm run build:download-lsp",
+    "build": "npm run clean && npm run build:pkl && npm run build:code && npm run build:tree-sitter",
+    "build:local": "npm run clean && npm run build:pkl && npm run build:code && npm run build:tree-sitter:local",
     "build:pkl": "pkl eval -m . src/pkl/index.pkl",
-    "build:download-lsp": "ts-node scripts/download-lsp-jar.ts",
     "build:tree-sitter": "shx mkdir -p out/grammar/ && cd node_modules/@apple/tree-sitter-pkl && tree-sitter build --wasm && shx mv tree-sitter-pkl.wasm ../../../out/pkl.wasm",
     "build:tree-sitter:local": "shx mkdir -p out/grammar/ && cd node_modules/@apple/tree-sitter-pkl && tree-sitter build --wasm && cd - && mv node_modules/@apple/tree-sitter-pkl/tree-sitter-pkl.wasm out/pkl.wasm",
     "build:code": "shx mkdir -p out/ && shx cp node_modules/web-tree-sitter/tree-sitter.wasm out/ && tsc",
@@ -206,7 +196,6 @@
     "prettier": "^3.6.2",
     "shx": "^0.4.0",
     "tree-sitter-cli": "^0.25.10",
-    "ts-node": "^10.9.2",
     "tslint": "^6.1.3",
     "typescript": "^5.9.3",
     "@vscode/vsce": "^3.6.2",

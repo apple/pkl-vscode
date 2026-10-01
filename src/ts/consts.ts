@@ -17,15 +17,11 @@
 import path from "node:path";
 import os from "node:os";
 
-export const CONFIG_JAVA_PATH = "pkl.lsp.java.path";
-
 export const CONFIG_LSP_PATH = "pkl.lsp.path";
 
 export const CONFIG_LSP_SOCKET_PORT = "pkl.lsp.socket.port";
 
 export const CONFIG_LSP_SOCKET_HOST = "pkl.lsp.socket.host";
-
-export const CONFIG_LSP_DEBUG_PORT = "pkl.lsp.debug.port";
 
 // only used by the LSP server
 export const CONFIG_CLI_PATH = "pkl.cli.path";
@@ -45,12 +41,23 @@ export const COMMAND_OPEN_WORKSPACE_SETTINGS = "workbench.action.openSettings";
 
 export const COMMAND_RELOAD_WORKSPACE_WINDOW = "workbench.action.reloadWindow";
 
-export const BUNDLED_LSP_VERSION = "0.8.0";
+/**
+ * The lowest version of pkl-lsp that this extension supports.
+ *
+ * This is the first version of pkl-lsp that is published as a native executable.
+ */
+export const MINIMUM_LSP_VERSION = "0.9.0";
+
+export const LSP_GITHUB_REPO = "apple/pkl-lsp";
+
+export const LSP_INSTALLATION_DOCS_URL = "https://pkl-lang.org/lsp/current/installation.html";
+
+export const LSP_EXECUTABLE_NAME = process.platform === "win32" ? "pkl-lsp.exe" : "pkl-lsp";
 
 /**
  * The directory that pkl-lsp distributions get saved to.
  *
- * Structure: `~/.pkl/editor-support/lsp-distributions/<version>/pkl-lsp-<version>.jar`
+ * Structure: `~/.pkl/editor-support/lsp-distributions/<version>/pkl-lsp`
  */
 export const LSP_DISTRIBUTIONS_DIR = path.join(
   os.homedir(),

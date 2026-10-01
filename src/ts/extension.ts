@@ -30,13 +30,11 @@ import {
   COMMAND_PKL_OPEN_FILE,
   COMMAND_RELOAD_WORKSPACE_WINDOW,
   COMMAND_SYNC_PROJECTS,
-  CONFIG_JAVA_PATH,
   CONFIG_LSP_PATH,
 } from "./consts";
 import config from "./config";
 import { pklDownloadPackageRequest, pklSyncProjectsRequest } from "./requests";
 import PklTextDocumentContentProvider from "./providers/PklTextDocumentContentProvider";
-import { getJavaDistribution, onDidChangeJavaDistribution } from "./javaDistribution";
 import { getLspDistribution, onDidChangeLspDistribution } from "./pklLspDistribution";
 import { queryForLatestLspDistribution } from "./pklLspDistributionUpdater";
 import logger from "./clients/logger";
@@ -66,24 +64,16 @@ async function getServerOptions(): Promise<ServerOptions> {
   if (config.lspSocketPort) {
     return getStreamInfo;
   }
-  const [javaDistribution, lspDistribution] = await Promise.all([
-    getJavaDistribution(),
-    getLspDistribution(),
-  ]);
+  const lspDistribution = await getLspDistribution();
   return {
     run: {
-      command: javaDistribution.path,
-      args: ["-jar", lspDistribution.path],
+      command: lspDistribution.path,
+      args: [],
       options: {},
     },
     debug: {
-      command: javaDistribution.path,
-      args: [
-        `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:${config.lspDebugPort}`,
-        "-jar",
-        lspDistribution.path,
-        "--verbose",
-      ],
+      command: lspDistribution.path,
+      args: ["--verbose"],
       options: {},
     },
   };
@@ -113,9 +103,9 @@ async function createLanguageClient() {
   return new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
 }
 
-async function nofityReloadNeeded() {
+async function notifyReloadNeeded() {
   const response = await vscode.window.showInformationMessage(
-    "The java path has changed, and the VSCode window needs to be reloaded to take effect.",
+    "The language server has changed, and the VSCode window needs to be reloaded to take effect.",
     "Reload Window",
   );
   if (response === "Reload Window") {
@@ -126,7 +116,7 @@ async function nofityReloadNeeded() {
 async function startLspServer() {
   if (languageClientRef.client?.needsStop() === true) {
     // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason, so we'll just ask users to reload the window.
-    nofityReloadNeeded();
+    notifyReloadNeeded();
     return;
   }
   logger.log("Starting language server");
@@ -220,10 +210,10 @@ const showRestartMessage = (configPath: string) => async () => {
 
 export async function activate(context: vscode.ExtensionContext) {
   await registerSubscriptions(context);
-  await startLspServer();
-  onDidChangeJavaDistribution(showRestartMessage(CONFIG_JAVA_PATH));
   onDidChangeLspDistribution(showRestartMessage(CONFIG_LSP_PATH));
-  queryForLatestLspDistribution();
+  // don't block activation on the language server. pkl-lsp might need to be downloaded first.
+  startLspServer().catch((err) => logger.error(`Failed to start language server: ${err}`));
+  getLspDistribution().then(queryForLatestLspDistribution);
 }
 
 export function deactivate(): Thenable<void> | undefined {
