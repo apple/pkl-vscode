@@ -3,9 +3,8 @@
         "module": "commonjs",
         "target": "esnext",
         "outDir": "out",
-        "lib": [
-            "esnext"
-        ],
+        "types": ["node"],
+        "lib": ["esnext"],
         "skipLibCheck": true,
         "sourceMap": true,
         "rootDir": "src/ts",

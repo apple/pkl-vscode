@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024-2025 Apple Inc. and the Pkl project authors. All rights reserved.
+ * Copyright © 2024-2026 Apple Inc. and the Pkl project authors. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import { execFile as _execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import { createWriteStream } from "node:fs";
 import https from "node:https";
+import http from "node:http";
 import crypto from "node:crypto";
 import os from "node:os";
 import path from "node:path";
@@ -58,23 +59,27 @@ export const isRegularFile = async (filepath: string) => {
  */
 export const httpsGetText = (url: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    https.get(url, { headers: { accept: "*/*", "user-agent": "pkl-vscode" } }, (response) => {
-      response.setEncoding("utf-8");
-      let body = "";
-      response.on("data", (chunk) => {
-        body += chunk;
-      });
-      response.on("end", () => {
-        if (response.statusCode !== 200) {
-          reject(new Error(body));
-        } else {
-          resolve(body);
-        }
-      });
-      response.on("error", (err) => {
-        reject(err);
-      });
-    });
+    https.get(
+      url,
+      { headers: { accept: "*/*", "user-agent": "pkl-vscode" } },
+      (response: http.IncomingMessage) => {
+        response.setEncoding("utf-8");
+        let body = "";
+        response.on("data", (chunk: any) => {
+          body += chunk;
+        });
+        response.on("end", () => {
+          if (response.statusCode !== 200) {
+            reject(new Error(body));
+          } else {
+            resolve(body);
+          }
+        });
+        response.on("error", (err: Error) => {
+          reject(err);
+        });
+      },
+    );
   });
 };
 
@@ -90,9 +95,9 @@ const downloadAndComputeChecksum = async (url: string, dest: string): Promise<st
   const writeStream = createWriteStream(dest, { mode: 0o755 });
   const hash = crypto.createHash("sha256");
   return new Promise((resolve, reject) => {
-    https.get(url, (response) => {
+    https.get(url, (response: http.IncomingMessage) => {
       response
-        .on("data", (chunk) => {
+        .on("data", (chunk: any) => {
           hash.update(chunk);
           writeStream.write(chunk);
         })
@@ -101,7 +106,7 @@ const downloadAndComputeChecksum = async (url: string, dest: string): Promise<st
           writeStream.end();
           resolve(computedChecksum);
         })
-        .on("error", (err) => {
+        .on("error", (err: Error) => {
           writeStream.destroy(err);
           reject(err);
         });

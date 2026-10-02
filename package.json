@@ -196,7 +196,7 @@
     "clone-grammar": "git submodule update --init --recursive"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1",
+    "vscode-languageclient": "^10.1.1",
     "web-tree-sitter": "^0.25.10"
   },
   "devDependencies": {
