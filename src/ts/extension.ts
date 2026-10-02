@@ -193,7 +193,7 @@ async function registerSubscriptions(context: vscode.ExtensionContext) {
       if (languageClientRef.client === undefined) {
         return;
       }
-      await languageClientRef.client.sendRequest(pklSyncProjectsRequest, null);
+      await languageClientRef.client.sendRequest(pklSyncProjectsRequest);
     }),
   );
 
