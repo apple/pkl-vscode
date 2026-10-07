@@ -4,22 +4,18 @@
 !README.md
 !language-configuration.json
 !package.json
-!package-lock.json
-!out/**
+!out/**/!(*.map)
 !queries/*
 !img/*
 !LICENSE
 
-# Ensure that prod dependencies are included.
-#
-# This is computed from:
-# `cat package-lock.json | jq -r '.packages | map_values(select(.dev != true)) | keys[] | select(. != "")'`
-!node_modules/balanced-match
-!node_modules/brace-expansion
-!node_modules/minimatch
-!node_modules/semver
-!node_modules/vscode-jsonrpc
-!node_modules/vscode-languageclient
-!node_modules/vscode-languageserver-protocol
-!node_modules/vscode-languageserver-types
-!node_modules/web-tree-sitter
+# vsce only collects production dependencies (`npm list --production`),
+# so dev dependencies are never packaged.
+!node_modules/!(web-tree-sitter)/**/!(*.map|*.d.ts)
+
+# web-tree-sitter also ships debug builds, C sources, and an ESM build
+# only the CommonJS build and its wasm are loaded at runtime.
+!node_modules/web-tree-sitter/package.json
+!node_modules/web-tree-sitter/LICENSE
+!node_modules/web-tree-sitter/tree-sitter.cjs
+!node_modules/web-tree-sitter/tree-sitter.wasm
