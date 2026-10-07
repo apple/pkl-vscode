@@ -105,6 +105,15 @@
         }
       }
     ],
+    "configurationDefaults": {
+      "[pkl]": {
+        "editor.quickSuggestions": {
+          "comments": "on",
+          "strings": "on"
+        },
+        "editor.suggestOnTriggerCharacters": true
+      }
+    },
     "configuration": {
       "title": "Pkl",
       "properties": {
