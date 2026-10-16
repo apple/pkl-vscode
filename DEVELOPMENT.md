@@ -25,3 +25,13 @@ To develop locally, there is a "Launch Extension" task. In VSCode, navigate to t
 Prior to launching, ensure the project environment is set up by running `npm run build:local`.
 
 The local development environment requires that the [esbuild Problem Matchers](https://marketplace.visualstudio.com/items?itemName=connor4312.esbuild-problem-matchers) plugin is installed into VSCode.
+
+## Collecting 3rd party sources
+
+To collect the source code and licenses of all 3rd party components distributed in the `.vsix`, run `npm run collect-dependencies`.
+This produces `.dist/pkl-vscode-<version>-third-party-sources.zip`, with one folder per component.
+Pass `-- --output <path.zip>` to write it somewhere else.
+
+If the extension starts shipping anything else that's not a npm non-dev dependency, update `scripts/collect-dependencies.ts`.
+
+The script needs `tar` and `zip` executables in the path.

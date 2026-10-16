@@ -192,6 +192,7 @@
     "build:tree-sitter": "shx mkdir -p out/ && cd node_modules/@apple/tree-sitter-pkl && tree-sitter build --wasm && shx mv tree-sitter-pkl.wasm ../../../out/pkl.wasm",
     "build:tree-sitter:local": "shx mkdir -p out/ && cd node_modules/@apple/tree-sitter-pkl && tree-sitter build --wasm && cd - && mv node_modules/@apple/tree-sitter-pkl/tree-sitter-pkl.wasm out/pkl.wasm",
     "build:code": "shx mkdir -p out/ && tsc",
+    "collect-dependencies": "tsx scripts/collect-dependencies.ts",
     "lint:fix": "prettier -w src/",
     "lint": "prettier -c src/",
     "watch": "tsc --watch",
