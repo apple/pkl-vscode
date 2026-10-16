@@ -352,7 +352,7 @@ async function npmComponents(registry: string): Promise<Component[]> {
     }
     log(`Resolving ${key}`);
     const meta = await httpGetJson<NpmMetadata>(
-      `${registry}/${name.replace("/", "%2F")}/${entry.version}`,
+      `${registry}/${name.replaceAll("/", "%2F")}/${entry.version}`,
     );
     const component: Component = {
       name,
