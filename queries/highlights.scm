@@ -27,13 +27,13 @@
   (identifier) @method (argumentList))
 
 (unqualifiedAccessExpr
-  (identifier) @property)
+  (identifier) @property .)
 
 (qualifiedAccessExpr
   (identifier) @method (argumentList))
 
 (qualifiedAccessExpr
-  (identifier) @property)
+  (identifier) @property .)
 
 (classMethod (methodHeader (identifier) @method))
 (objectMethod (methodHeader (identifier) @method))
@@ -150,4 +150,5 @@
 (outerExpr) @variable.defaultLibrary
 "super" @variable.defaultLibrary
 (thisExpr) @variable.builtin
+(thisType) @type.defaultLibrary
 (ERROR) @error
