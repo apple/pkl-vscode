@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024-2025 Apple Inc. and the Pkl project authors. All rights reserved.
+ * Copyright © 2024-2026 Apple Inc. and the Pkl project authors. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,16 @@ export type MavenSolrResponseDocs = {
   repositoryId: string;
 };
 
+export const mavenMetadataUrl = (query: { group: string; artifact: string }): string => {
+  const groupSearch = query.group.replace(/\./g, "/");
+  return `https://repo1.maven.org/maven2/${groupSearch}/${query.artifact}/maven-metadata.xml`;
+};
+
 export const getLatestVersion = async (query: {
   group: string;
   artifact: string;
 }): Promise<Semver> => {
-  const groupSearch = query.group.replace(".", "/");
-  const artifactSearch = query.artifact.replace(".", "/");
-  const xml = await httpsGetText(
-    `https://repo1.maven.org/maven2/${groupSearch}/${artifactSearch}/maven-metadata.xml`,
-  );
+  const xml = await httpsGetText(mavenMetadataUrl(query));
   const versionString = extractVersion(xml);
   const version = versionString ? Semver.parse(versionString) : null;
   if (version == null) {
