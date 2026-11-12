@@ -15,6 +15,7 @@
  */
 
 import * as vscode from "vscode";
+import { toZeroBasedPosition } from "./position";
 import { newPklSemanticTokenProvider } from "./providers/PklSemanticTokensProvider";
 import {
   LanguageClient,
@@ -113,7 +114,7 @@ async function createLanguageClient() {
   return new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
 }
 
-async function nofityReloadNeeded() {
+async function notifyReloadNeeded() {
   const response = await vscode.window.showInformationMessage(
     "The java path has changed, and the VSCode window needs to be reloaded to take effect.",
     "Reload Window",
@@ -126,7 +127,7 @@ async function nofityReloadNeeded() {
 async function startLspServer() {
   if (languageClientRef.client?.needsStop() === true) {
     // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason, so we'll just ask users to reload the window.
-    nofityReloadNeeded();
+    notifyReloadNeeded();
     return;
   }
   logger.log("Starting language server");
@@ -162,15 +163,8 @@ async function registerSubscriptions(context: vscode.ExtensionContext) {
         const parsedUri = vscode.Uri.parse(path);
         const editor = await vscode.window.showTextDocument(parsedUri);
 
-        let line = maybeLine ?? 0;
-        if (Number.isNaN(line)) {
-          line = 1;
-        }
-        let col = maybeCol ?? 0;
-        if (Number.isNaN(col)) {
-          col = 1;
-        }
-        const pos = new vscode.Position(line - 1, col - 1);
+        const { line, character } = toZeroBasedPosition(maybeLine, maybeCol);
+        const pos = new vscode.Position(line, character);
 
         const range = new vscode.Range(pos, pos);
         editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
