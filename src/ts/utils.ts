@@ -59,7 +59,7 @@ export const isRegularFile = async (filepath: string) => {
  */
 export const httpsGetText = (url: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    https.get(
+    const req = https.get(
       url,
       { headers: { accept: "*/*", "user-agent": "pkl-vscode" } },
       (response: http.IncomingMessage) => {
@@ -80,6 +80,9 @@ export const httpsGetText = (url: string): Promise<string> => {
         });
       },
     );
+    req.on("error", (err: Error) => {
+      reject(err);
+    });
   });
 };
 
@@ -95,7 +98,24 @@ const downloadAndComputeChecksum = async (url: string, dest: string): Promise<st
   const writeStream = createWriteStream(dest, { mode: 0o755 });
   const hash = crypto.createHash("sha256");
   return new Promise((resolve, reject) => {
-    https.get(url, (response: http.IncomingMessage) => {
+    let settled = false;
+    const fail = (err: Error) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      writeStream.destroy();
+      reject(err);
+    };
+
+    writeStream.on("error", fail);
+
+    const req = https.get(url, (response: http.IncomingMessage) => {
+      if (response.statusCode !== 200) {
+        response.resume();
+        fail(new Error(`Failed to download ${url}: HTTP ${response.statusCode ?? "unknown"}`));
+        return;
+      }
       response
         .on("data", (chunk: any) => {
           hash.update(chunk);
@@ -103,14 +123,16 @@ const downloadAndComputeChecksum = async (url: string, dest: string): Promise<st
         })
         .on("end", () => {
           const computedChecksum = hash.digest().toString("hex");
-          writeStream.end();
-          resolve(computedChecksum);
+          writeStream.end(() => {
+            if (!settled) {
+              settled = true;
+              resolve(computedChecksum);
+            }
+          });
         })
-        .on("error", (err: Error) => {
-          writeStream.destroy(err);
-          reject(err);
-        });
+        .on("error", fail);
     });
+    req.on("error", fail);
   });
 };
 
@@ -119,12 +141,18 @@ const downloadAndComputeChecksum = async (url: string, dest: string): Promise<st
  */
 export const httpsDownload = async (url: string, dest: string, checksum: string): Promise<void> => {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "pkl-vscode-"));
-  const tempFile = `${tempDir}/contents.download`;
-  const computedChecksum = await downloadAndComputeChecksum(url, tempFile);
-  if (computedChecksum === checksum) {
-    await fs.mkdir(path.resolve(dest, ".."), { recursive: true });
-    await fs.rename(tempFile, dest);
-  } else {
-    throw new Error(`Failed to download ${url}: expected ${checksum}, but got ${computedChecksum}`);
+  const tempFile = path.join(tempDir, "contents.download");
+  try {
+    const computedChecksum = await downloadAndComputeChecksum(url, tempFile);
+    if (computedChecksum === checksum) {
+      await fs.mkdir(path.dirname(dest), { recursive: true });
+      await fs.rename(tempFile, dest);
+    } else {
+      throw new Error(
+        `Failed to download ${url}: expected ${checksum}, but got ${computedChecksum}`,
+      );
+    }
+  } finally {
+    await fs.rm(tempDir, { recursive: true, force: true });
   }
 };
