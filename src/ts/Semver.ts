@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024-2025 Apple Inc. and the Pkl project authors. All rights reserved.
+ * Copyright © 2024-2026 Apple Inc. and the Pkl project authors. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,9 @@ export default class Semver {
     let ret = `${this.major}.${this.minor}.${this.patch}`;
     if (this.preRelease !== undefined) {
       ret += `-${this.preRelease}`;
-      if (this.build !== undefined) {
-        ret += `+${this.build}`;
-      }
+    }
+    if (this.build !== undefined) {
+      ret += `+${this.build}`;
     }
     return ret;
   }
