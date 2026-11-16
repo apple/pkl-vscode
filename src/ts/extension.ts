@@ -15,13 +15,11 @@
  */
 
 import * as vscode from "vscode";
-import { newPklSemanticTokenProvider } from "./providers/PklSemanticTokensProvider";
 import {
-  LanguageClient,
-  LanguageClientOptions,
-  ServerOptions,
-  StreamInfo,
-} from "vscode-languageclient/node";
+  newPklSemanticTokenProvider,
+  PklSemanticTokensProvider,
+} from "./providers/PklSemanticTokensProvider";
+import { LanguageClientOptions, ServerOptions, StreamInfo } from "vscode-languageclient/node";
 import { registerNotificationHandlers } from "./notifications";
 import {
   COMMAND_DOWNLOAD_PACKAGE,
@@ -41,9 +39,11 @@ import { getLspDistribution, onDidChangeLspDistribution } from "./pklLspDistribu
 import { queryForLatestLspDistribution } from "./pklLspDistributionUpdater";
 import logger from "./clients/logger";
 import net from "net";
+import PklLanguageClient from "./PklLanguageClient";
+import provideDocumentRangeSemanticTokens from "./middleware/provideDocumentSemanticTokens";
 
 export type LanguageClientRef = {
-  client?: LanguageClient;
+  client?: PklLanguageClient;
 };
 
 let languageClientRef: LanguageClientRef = {};
@@ -89,7 +89,7 @@ async function getServerOptions(): Promise<ServerOptions> {
   };
 }
 
-async function createLanguageClient() {
+async function createLanguageClient(semanticTokensProvider: PklSemanticTokensProvider) {
   const serverOptions = await getServerOptions();
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
@@ -109,8 +109,14 @@ async function createLanguageClient() {
         pklConfigureCommand: true,
       },
     },
+    middleware: {
+      provideDocumentSemanticTokens: provideDocumentRangeSemanticTokens(
+        languageClientRef,
+        semanticTokensProvider,
+      ),
+    },
   };
-  return new LanguageClient("Pkl", "Pkl Language Server", serverOptions, clientOptions);
+  return new PklLanguageClient(serverOptions, clientOptions, semanticTokensProvider.legend);
 }
 
 async function nofityReloadNeeded() {
@@ -123,28 +129,24 @@ async function nofityReloadNeeded() {
   }
 }
 
-async function startLspServer() {
+async function startLspServer(semanticTokensProvider: PklSemanticTokensProvider) {
   if (languageClientRef.client?.needsStop() === true) {
     // Calling `LanguageClient#stop()` causes all sorts of havoc for some reason, so we'll just ask users to reload the window.
     nofityReloadNeeded();
     return;
   }
   logger.log("Starting language server");
-  const client = await createLanguageClient();
+  const client = await createLanguageClient(semanticTokensProvider);
   languageClientRef.client = client;
   await client.start();
   registerNotificationHandlers(client);
 }
 
-async function registerSubscriptions(context: vscode.ExtensionContext) {
-  const semanticTokensProvider = await newPklSemanticTokenProvider();
-
+async function registerSubscriptions(
+  context: vscode.ExtensionContext,
+  semanticTokensProvider: PklSemanticTokensProvider,
+) {
   context.subscriptions.push(
-    vscode.languages.registerDocumentSemanticTokensProvider(
-      { language: "pkl" },
-      semanticTokensProvider,
-      semanticTokensProvider.legend,
-    ),
     vscode.languages.registerFoldingRangeProvider({ language: "pkl" }, semanticTokensProvider),
   );
 
@@ -219,8 +221,9 @@ const showRestartMessage = (configPath: string) => async () => {
 };
 
 export async function activate(context: vscode.ExtensionContext) {
-  await registerSubscriptions(context);
-  await startLspServer();
+  const semanticTokensProvider = await newPklSemanticTokenProvider();
+  await registerSubscriptions(context, semanticTokensProvider);
+  await startLspServer(semanticTokensProvider);
   onDidChangeJavaDistribution(showRestartMessage(CONFIG_JAVA_PATH));
   onDidChangeLspDistribution(showRestartMessage(CONFIG_LSP_PATH));
   queryForLatestLspDistribution();
