@@ -33,6 +33,9 @@ export const CONFIG_CLI_PATH = "pkl.cli.path";
 // only used by the LSP server
 export const CONFIG_PROJECTS_EXCLUDED_DIRECTORIES = "pkl.projects.excludedDirectories";
 
+// only used by the LSP server
+export const CONFIG_EXTERNAL_MODULE_READERS = "pkl.externalModuleReaders";
+
 export const COMMAND_DOWNLOAD_PACKAGE = "pkl.downloadPackage";
 
 export const COMMAND_PKL_OPEN_FILE = "pkl.open.file";
