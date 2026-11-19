@@ -159,7 +159,10 @@
           "type": "string",
           "default": "2",
           "description": "Grammar version to use when formatting Pkl code",
-          "enum": ["1", "2"],
+          "enum": [
+            "1",
+            "2"
+          ],
           "enumDescriptions": [
             "Pkl 0.25 - 0.29",
             "Pkl 0.30+"
@@ -172,6 +175,48 @@
           },
           "default": [],
           "description": "List of directories to exclude when discovering Pkl projects. Supports glob patterns (* and **)."
+        },
+        "pkl.externalModuleReaders": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "executable": {
+                "type": "string",
+                "description": "The executable that implements the reader."
+              },
+              "arguments": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Arguments to pass to the executable."
+              },
+              "workingDir": {
+                "type": "string",
+                "description": "The working directory to start the executable in."
+              }
+            },
+            "required": [
+              "executable"
+            ],
+            "defaultSnippets": [
+              {
+                "label": "External module reader",
+                "description": "A reader that is started with the given executable and arguments, running in the working dir.",
+                "body": {
+                  "executable": "${1:my-executable}",
+                  "arguments": [
+                    "${2:--flag}"
+                  ],
+                  "workingDir": "${2:/path/to/dir}"
+                }
+              }
+            ]
+          },
+          "markdownDescription": "External module readers, keyed by URI scheme. Readers declared in a `PklProject` take precedence. Relative paths are resolved against the workspace roots, in order. Executables without a path separator are looked up on the PATH. Requires pkl-lsp 0.10.0 or newer.",
+          "description": "External module readers, keyed by URI scheme. Readers declared in a PklProject take precedence. Relative paths are resolved against the workspace roots, in order. Executables without a path separator are looked up on the PATH. Requires pkl-lsp 0.10.0 or newer."
         }
       }
     },
