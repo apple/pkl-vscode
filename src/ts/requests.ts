@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { RequestType, RequestType0, TextDocumentIdentifier } from "vscode-languageclient/node";
+import { SnippetTextEdit } from "vscode";
+import {
+  RequestType,
+  RequestType0,
+  TextDocumentIdentifier,
+  TextDocumentPositionParams,
+} from "vscode-languageclient/node";
 
 export const pklFileContentRequest = new RequestType<TextDocumentIdentifier, string, void>(
   "pkl/fileContents",
@@ -23,3 +29,9 @@ export const pklFileContentRequest = new RequestType<TextDocumentIdentifier, str
 export const pklDownloadPackageRequest = new RequestType<string, void, void>("pkl/downloadPackage");
 
 export const pklSyncProjectsRequest = new RequestType0<void, void>("pkl/syncProjects");
+
+export const pklOnEnterRequest = new RequestType<
+  TextDocumentPositionParams,
+  SnippetTextEdit[] | null,
+  void
+>("pkl/onEnter");
