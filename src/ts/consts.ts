@@ -41,6 +41,8 @@ export const COMMAND_SYNC_PROJECTS = "pkl.syncProjects";
 
 export const COMMAND_PKL_CONFIGURE = "pkl.configure";
 
+export const COMMAND_PKL_HANDLE_ENTER = "pkl.handleEnter";
+
 export const COMMAND_OPEN_WORKSPACE_SETTINGS = "workbench.action.openSettings";
 
 export const COMMAND_RELOAD_WORKSPACE_WINDOW = "workbench.action.reloadWindow";

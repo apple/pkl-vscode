@@ -181,6 +181,13 @@
         "title": "Sync Projects",
         "command": "pkl.syncProjects"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "pkl.handleEnter",
+        "key": "enter",
+        "when": "editorTextFocus && !suggestWidgetVisible && !renameInputVisible && !inSnippetMode"
+      }
     ]
   },
   "scripts": {

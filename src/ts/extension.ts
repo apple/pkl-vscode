@@ -19,12 +19,18 @@ import {
   newPklSemanticTokenProvider,
   PklSemanticTokensProvider,
 } from "./providers/PklSemanticTokensProvider";
-import { LanguageClientOptions, ServerOptions, StreamInfo } from "vscode-languageclient/node";
+import {
+  LanguageClientOptions,
+  ServerOptions,
+  StreamInfo,
+  TextDocumentPositionParams,
+} from "vscode-languageclient/node";
 import { registerNotificationHandlers } from "./notifications";
 import {
   COMMAND_DOWNLOAD_PACKAGE,
   COMMAND_OPEN_WORKSPACE_SETTINGS,
   COMMAND_PKL_CONFIGURE,
+  COMMAND_PKL_HANDLE_ENTER,
   COMMAND_PKL_OPEN_FILE,
   COMMAND_RELOAD_WORKSPACE_WINDOW,
   COMMAND_SYNC_PROJECTS,
@@ -32,7 +38,7 @@ import {
   CONFIG_LSP_PATH,
 } from "./consts";
 import config from "./config";
-import { pklDownloadPackageRequest, pklSyncProjectsRequest } from "./requests";
+import { pklDownloadPackageRequest, pklSyncProjectsRequest, pklOnEnterRequest } from "./requests";
 import PklTextDocumentContentProvider from "./providers/PklTextDocumentContentProvider";
 import { getJavaDistribution, onDidChangeJavaDistribution } from "./javaDistribution";
 import { getLspDistribution, onDidChangeLspDistribution } from "./pklLspDistribution";
@@ -202,6 +208,38 @@ async function registerSubscriptions(
   context.subscriptions.push(
     vscode.commands.registerCommand(COMMAND_PKL_CONFIGURE, async (configurationPath: string) => {
       await vscode.commands.executeCommand(COMMAND_OPEN_WORKSPACE_SETTINGS, configurationPath);
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(COMMAND_PKL_HANDLE_ENTER, async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (
+        editor === undefined ||
+        languageClientRef.client === undefined ||
+        languageClientRef.client.initializeResult?.capabilities?.experimental?.onEnter !== true
+      ) {
+        return await vscode.commands.executeCommand("type", { text: "\n" });
+      }
+      var uri = editor.document.uri;
+      const params: TextDocumentPositionParams = {
+        textDocument: {
+          uri: uri.toString(),
+        },
+        position: editor.selection.active,
+      };
+      try {
+        var edits = await languageClientRef.client?.sendRequest(pklOnEnterRequest, params);
+      } catch (e) {
+        logger.warn(`Got an error during requesting pkl/onEnter: ${e}`);
+        return await vscode.commands.executeCommand("type", { text: "\n" });
+      }
+      if (edits == null) {
+        return await vscode.commands.executeCommand("type", { text: "\n" });
+      }
+      var edit = new vscode.WorkspaceEdit();
+      edit.set(uri, edits);
+      await vscode.workspace.applyEdit(edit);
     }),
   );
 }
